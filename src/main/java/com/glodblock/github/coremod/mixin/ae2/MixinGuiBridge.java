@@ -1,0 +1,30 @@
+package com.glodblock.github.coremod.mixin.ae2;
+
+import appeng.container.implementations.ContainerInterface;
+import appeng.core.sync.GuiBridge;
+import com.glodblock.github.client.container.ContainerWrapInterface;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+
+@Mixin(value = GuiBridge.class, remap = false)
+public class MixinGuiBridge {
+
+    @Mutable
+    @Shadow
+    @Final
+    private Class<?> containerClass;
+
+    @WrapOperation(method = "<init>(Ljava/lang/String;ILjava/lang/Class;Ljava/lang/Class;Lappeng/core/sync/GuiHostType;Lappeng/api/config/SecurityPermissions;)V", at = @At(value = "INVOKE", target = "Lappeng/core/sync/GuiBridge;getGui()V"))
+    private void containerInterfaceR(GuiBridge instance, Operation<Void> original, @Local(name = "containerClass") Class<?> containerClass) {
+        if (containerClass == ContainerInterface.class) {
+            this.containerClass = ContainerWrapInterface.class;
+        }
+        original.call(instance);
+    }
+}

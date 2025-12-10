@@ -60,6 +60,7 @@ import com.google.common.base.Preconditions;
 import com.mekeng.github.common.me.data.IAEGasStack;
 import com.mekeng.github.common.me.storage.IGasStorageChannel;
 import mekanism.api.gas.GasStack;
+import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -83,6 +84,10 @@ public class CoreModHooks {
     public static InventoryCrafting wrapCraftingBuffer(InventoryCrafting inv) {
         int s = inv.getWidth() > 3 ? 10 : 3;
         return new FluidConvertingInventoryCrafting(Ae2Reflect.getCraftContainer(inv), s, s);
+    }
+
+    public static InventoryCrafting wrapCraftingBuffer(Container container, int width, int height) {
+        return new FluidConvertingInventoryCrafting(container, width, height);
     }
 
     public static IAEItemStack wrapFluidPacketStack(IAEItemStack stack) {
@@ -132,8 +137,7 @@ public class CoreModHooks {
         if (ModAndClassUtil.GAS && !stack.isEmpty() && stack.getItem() == FCGasItems.GAS_PACKET) {
             GasStack gas = FakeItemRegister.getStack(stack);
             return FakeGases.packGas2Drops(gas);
-        }
-        else {
+        } else {
             return stack;
         }
     }
@@ -158,7 +162,7 @@ public class CoreModHooks {
 
     public static boolean checkForItemHandler(ICapabilityProvider capProvider, Capability<?> capability, EnumFacing side) {
         return capProvider.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)
-                || capProvider.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side);
+            || capProvider.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side);
     }
 
     public static IItemHandler wrapItemHandler(ICapabilityProvider capProvider, Capability<?> capability, EnumFacing side) {
@@ -265,7 +269,7 @@ public class CoreModHooks {
             return;
         }
 
-        final IStorageGrid sg = g.getCache( IStorageGrid.class );
+        final IStorageGrid sg = g.getCache(IStorageGrid.class);
         final IMEInventory<IAEItemStack> ii = sg.getInventory(AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class));
         final IMEInventory<IAEFluidStack> jj = sg.getInventory(AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class));
         final IMEInventory kk;
@@ -345,10 +349,9 @@ public class CoreModHooks {
 
     public static boolean startJob(ContainerCraftConfirm ccc, ArrayList<CraftingCPURecord> cpus, ICraftingJob result) {
         GuiType originalGui = null;
-        if (!(ccc instanceof ContainerFCCraftConfirm)) {
+        if (!(ccc instanceof ContainerFCCraftConfirm container)) {
             return false;
         }
-        ContainerFCCraftConfirm container = (ContainerFCCraftConfirm) ccc;
         IActionHost ah = container.getActionHost();
 
         if (ah instanceof WirelessTerminalGuiObject) {
@@ -370,7 +373,7 @@ public class CoreModHooks {
             return false;
         }
 
-        IActionHost h = (IActionHost)container.getTarget();
+        IActionHost h = (IActionHost) container.getTarget();
         if (h != null) {
             IGridNode node = h.getActionableNode();
             IGrid grid = node.getGrid();
@@ -383,11 +386,11 @@ public class CoreModHooks {
                 } else if (container.getOpenContext() != null) {
                     ContainerOpenContext context = container.getOpenContext();
                     InventoryHandler.openGui(
-                            container.getInventoryPlayer().player,
-                            container.getInventoryPlayer().player.world,
-                            new BlockPos(Ae2Reflect.getContextX(context), Ae2Reflect.getContextY(context), Ae2Reflect.getContextZ(context)),
-                            container.getOpenContext().getSide().getFacing(),
-                            originalGui
+                        container.getInventoryPlayer().player,
+                        container.getInventoryPlayer().player.world,
+                        new BlockPos(Ae2Reflect.getContextX(context), Ae2Reflect.getContextY(context), Ae2Reflect.getContextZ(context)),
+                        container.getOpenContext().getSide().getFacing(),
+                        originalGui
                     );
                 }
             }

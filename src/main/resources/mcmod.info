@@ -3,11 +3,14 @@
     "modid": "ae2fc",
     "name": "AE2 Fluid Crafting",
     "description": "Lets you do Crafting... with Fluids!",
-    "version": "${version}",
-    "mcversion": "${mcversion}",
+    "version": "${mod_version}",
+    "mcversion": "1.12.2",
     "url": "",
     "updateUrl": "",
-    "authorList": ["GlodBlock"],
+    "authorList": [
+      "GlodBlock",
+      "Circulation_"
+    ],
     "credits":"phantamanta44",
     "logoFile": "",
     "screenshots": []

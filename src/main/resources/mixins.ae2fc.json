@@ -1,0 +1,24 @@
+{
+  "package": "com.glodblock.github.coremod.mixin",
+  "required": true,
+  "refmap": "mixins.ae2fc.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8.5",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "ae2.MixinAEBaseTileAndPart",
+    "ae2.MixinContainerCraftConfirm",
+    "ae2.MixinContainerInterfaceTerminal",
+    "ae2.MixinContainerPatternEncoder",
+    "ae2.MixinCraftingCPUCluster",
+    "ae2.MixinCraftingTreeNode",
+    "ae2.MixinDualityInterface",
+    "ae2.MixinGuiBridge",
+    "ae2.MixinPartType"
+  ],
+  "server": [],
+  "client": [
+    "ae2.MixinGuiCrafting",
+    "ae2.MixinGuiCraftingStatus"
+  ]
+}
