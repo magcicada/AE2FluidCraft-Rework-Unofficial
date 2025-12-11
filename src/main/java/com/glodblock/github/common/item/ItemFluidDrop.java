@@ -1,6 +1,5 @@
 package com.glodblock.github.common.item;
 
-import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.util.NameConst;
 import net.minecraft.client.util.ITooltipFlag;
@@ -11,7 +10,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nonnull;
@@ -22,10 +20,7 @@ public class ItemFluidDrop extends Item {
 
     @Override
     public void getSubItems(@Nonnull CreativeTabs tab,@Nonnull NonNullList<ItemStack> items) {
-        if (isInCreativeTab(tab)) {
-            items.add(FakeFluids.packFluid2Drops(new FluidStack(FluidRegistry.WATER, 1)));
-            items.add(FakeFluids.packFluid2Drops(new FluidStack(FluidRegistry.LAVA, 1)));
-        }
+
     }
 
     @SuppressWarnings("deprecation")

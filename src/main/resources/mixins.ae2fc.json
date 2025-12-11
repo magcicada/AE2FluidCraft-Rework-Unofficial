@@ -17,7 +17,8 @@
     "ae2.MixinGuiBridge",
     "ae2.MixinNetworkInventoryHandler",
     "ae2.MixinNetworkMonitor",
-    "ae2.MixinPartType"
+    "ae2.MixinPartType",
+    "ae2.MixinTileIOPort"
   ],
   "server": [],
   "client": [

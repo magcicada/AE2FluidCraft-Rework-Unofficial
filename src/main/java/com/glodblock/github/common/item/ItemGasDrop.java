@@ -1,10 +1,8 @@
 package com.glodblock.github.common.item;
 
 import com.glodblock.github.common.item.fake.FakeItemRegister;
-import com.glodblock.github.integration.mek.FakeGases;
 import com.glodblock.github.util.NameConst;
 import mekanism.api.gas.GasStack;
-import mekanism.common.MekanismFluids;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -22,10 +20,7 @@ public class ItemGasDrop extends Item {
 
     @Override
     public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-        if (isInCreativeTab(tab)) {
-            items.add(FakeGases.packGas2Drops(new GasStack(MekanismFluids.Hydrogen, 1)));
-            items.add(FakeGases.packGas2Drops(new GasStack(MekanismFluids.Ethene, 1)));
-        }
+
     }
 
     @SuppressWarnings("deprecation")
