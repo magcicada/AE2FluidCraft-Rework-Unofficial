@@ -2,15 +2,12 @@ package com.glodblock.github.network;
 
 import appeng.container.ContainerOpenContext;
 import appeng.container.slot.SlotFake;
-import com.glodblock.github.client.container.ContainerExtendedFluidPatternTerminal;
-import com.glodblock.github.client.container.ContainerFluidPatternTerminal;
 import com.glodblock.github.client.container.ContainerItemAmountChange;
-import com.glodblock.github.client.container.ContainerUltimateEncoder;
-import com.glodblock.github.client.container.ContainerWirelessFluidPatternTerminal;
 import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.integration.mek.FakeGases;
+import com.glodblock.github.interfaces.FCFluidPatternContainer;
 import com.glodblock.github.inventory.GuiType;
 import com.glodblock.github.inventory.InventoryHandler;
 import com.glodblock.github.loader.FCItems;
@@ -21,7 +18,6 @@ import mekanism.api.gas.GasStack;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -64,8 +60,7 @@ public class CPacketPatternValueSet implements IMessage {
         public IMessage onMessage(CPacketPatternValueSet message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().player;
             player.getServerWorld().addScheduledTask(() -> {
-                if (player.openContainer instanceof ContainerItemAmountChange) {
-                    ContainerItemAmountChange cpv = (ContainerItemAmountChange) player.openContainer;
+                if (player.openContainer instanceof ContainerItemAmountChange cpv) {
                     final ContainerOpenContext context = cpv.getOpenContext();
                     if (context != null) {
                         InventoryHandler.openGui(
@@ -75,10 +70,7 @@ public class CPacketPatternValueSet implements IMessage {
                                 context.getSide().getFacing(),
                                 message.originGui
                         );
-                        if (player.openContainer instanceof ContainerFluidPatternTerminal
-                                || player.openContainer instanceof ContainerExtendedFluidPatternTerminal
-                                || player.openContainer instanceof ContainerUltimateEncoder
-                                || player.openContainer instanceof ContainerWirelessFluidPatternTerminal) {
+                        if (player.openContainer instanceof FCFluidPatternContainer) {
                             Slot slot = player.openContainer.getSlot(message.valueIndex);
                             if (slot instanceof SlotFake) {
                                 if (slot.getHasStack()) {

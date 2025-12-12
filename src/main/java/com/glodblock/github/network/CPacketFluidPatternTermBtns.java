@@ -1,14 +1,9 @@
 package com.glodblock.github.network;
 
-import com.glodblock.github.client.container.ContainerExtendedFluidPatternTerminal;
-import com.glodblock.github.client.container.ContainerFluidPatternTerminal;
 import com.glodblock.github.client.container.ContainerItemDualInterface;
 import com.glodblock.github.client.container.ContainerUltimateEncoder;
-import com.glodblock.github.client.container.ContainerWirelessFluidPatternTerminal;
 import com.glodblock.github.client.container.ContainerWrapInterface;
-import com.glodblock.github.common.part.PartExtendedFluidPatternTerminal;
-import com.glodblock.github.common.part.PartFluidPatternTerminal;
-import com.glodblock.github.util.Ae2Reflect;
+import com.glodblock.github.interfaces.FCFluidPatternContainer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -21,7 +16,7 @@ public class CPacketFluidPatternTermBtns implements IMessage {
     private String Name = "";
     private String Value = "";
 
-    public CPacketFluidPatternTermBtns( final String name, final String value ) {
+    public CPacketFluidPatternTermBtns(final String name, final String value) {
         Name = name;
         Value = value;
     }
@@ -35,12 +30,12 @@ public class CPacketFluidPatternTermBtns implements IMessage {
         int leName = buf.readInt();
         int leVal = buf.readInt();
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < leName; i ++) {
+        for (int i = 0; i < leName; i++) {
             sb.append(buf.readChar());
         }
         Name = sb.toString();
         sb = new StringBuilder();
-        for (int i = 0; i < leVal; i ++) {
+        for (int i = 0; i < leVal; i++) {
             sb.append(buf.readChar());
         }
         Value = sb.toString();
@@ -50,10 +45,10 @@ public class CPacketFluidPatternTermBtns implements IMessage {
     public void toBytes(ByteBuf buf) {
         buf.writeInt(Name.length());
         buf.writeInt(Value.length());
-        for (int i = 0; i < Name.length(); i ++) {
+        for (int i = 0; i < Name.length(); i++) {
             buf.writeChar(Name.charAt(i));
         }
-        for (int i = 0; i < Value.length(); i ++) {
+        for (int i = 0; i < Value.length(); i++) {
             buf.writeChar(Value.charAt(i));
         }
     }
@@ -67,104 +62,42 @@ public class CPacketFluidPatternTermBtns implements IMessage {
                 String Name = message.Name;
                 String Value = message.Value;
                 final Container c = player.openContainer;
-                if (c instanceof ContainerFluidPatternTerminal) {
-                    final ContainerFluidPatternTerminal cpt = (ContainerFluidPatternTerminal) c;
-                    switch (Name) {
-                        case "PatternTerminal.Combine":
-                            ((PartFluidPatternTerminal) Ae2Reflect.getPart(cpt)).setCombineMode(Value.equals("1"));
-                            break;
-                        case "PatternTerminal.Fluid":
-                            ((PartFluidPatternTerminal) Ae2Reflect.getPart(cpt)).setFluidPlaceMode(Value.equals("1"));
-                            break;
-                        case "PatternTerminal.Craft":
-                            cpt.encodeFluidCraftPattern();
-                            break;
+                if (c instanceof FCFluidPatternContainer cpt) {
+                    if (c instanceof ContainerUltimateEncoder cue) {
+                        switch (Name) {
+                            case "UltimateEncoder.Encode" -> {
+                                if (Value.equals("0"))
+                                    cue.encode();
+                                else cue.encodeAndMoveToInventory();
+                            }
+                            case "UltimateEncoder.Clear" -> cue.clear();
+                            case "UltimateEncoder.MultiplyByTwo" -> cue.multiply(2);
+                            case "UltimateEncoder.MultiplyByThree" -> cue.multiply(3);
+                            case "UltimateEncoder.DivideByTwo" -> cue.divide(2);
+                            case "UltimateEncoder.DivideByThree" -> cue.divide(3);
+                            case "UltimateEncoder.IncreaseByOne" -> cue.increase(1);
+                            case "UltimateEncoder.DecreaseByOne" -> cue.decrease(1);
+                            case "UltimateEncoder.Combine" -> cue.setCombineMode(Value.equals("1"));
+                            case "UltimateEncoder.Fluid" -> cue.setFluidPlaceMode(Value.equals("1"));
+                        }
+                    } else {
+                        switch (Name) {
+                            case "PatternTerminal.Combine" -> cpt.setCombineMode(Value.equals("1"));
+                            case "PatternTerminal.Fluid" -> cpt.setFluidPlaceMode(Value.equals("1"));
+                            case "PatternTerminal.Craft" -> cpt.encodeFluidCraftPattern();
+                        }
                     }
-                } else if (c instanceof ContainerWirelessFluidPatternTerminal) {
-                    final ContainerWirelessFluidPatternTerminal cpt = (ContainerWirelessFluidPatternTerminal) c;
+                } else if (c instanceof ContainerItemDualInterface cdi) {
                     switch (Name) {
-                        case "PatternTerminal.Combine":
-                            cpt.setCombineMode(Value.equals("1"));
-                            break;
-                        case "PatternTerminal.Fluid":
-                            cpt.setFluidPlaceMode(Value.equals("1"));
-                            break;
-                        case "PatternTerminal.Craft":
-                            cpt.encodeFluidCraftPattern();
-                            break;
+                        case "DualInterface.FluidPacket" -> cdi.setFluidPacketInTile(Value.equals("1"));
+                        case "DualInterface.AllowSplitting" -> cdi.setAllowSplittingInTile(Value.equals("1"));
+                        case "DualInterface.ExtendedBlockMode" -> cdi.setExtendedBlockMode(Integer.parseInt(Value));
                     }
-                } else if (c instanceof ContainerExtendedFluidPatternTerminal) {
-                    final ContainerExtendedFluidPatternTerminal cpt = (ContainerExtendedFluidPatternTerminal) c;
+                } else if (c instanceof ContainerWrapInterface cdi) {
                     switch (Name) {
-                        case "PatternTerminal.Combine":
-                            ((PartExtendedFluidPatternTerminal) Ae2Reflect.getPart(cpt)).setCombineMode(Value.equals("1"));
-                            break;
-                        case "PatternTerminal.Fluid":
-                            ((PartExtendedFluidPatternTerminal) Ae2Reflect.getPart(cpt)).setFluidPlaceMode(Value.equals("1"));
-                            break;
-                    }
-                } else if (c instanceof ContainerItemDualInterface) {
-                    final ContainerItemDualInterface cdi = (ContainerItemDualInterface) c;
-                    switch (Name) {
-                        case "DualInterface.FluidPacket":
-                            cdi.setFluidPacketInTile(Value.equals("1"));
-                            break;
-                        case "DualInterface.AllowSplitting":
-                            cdi.setAllowSplittingInTile(Value.equals("1"));
-                            break;
-                        case "DualInterface.ExtendedBlockMode":
-                            cdi.setExtendedBlockMode(Integer.parseInt(Value));
-                            break;
-                    }
-                } else if (c instanceof ContainerWrapInterface) {
-                    final ContainerWrapInterface cdi = (ContainerWrapInterface) c;
-                    switch (Name) {
-                        case "WrapDualInterface.FluidPacket":
-                            cdi.setFluidPacketInTile(Value.equals("1"));
-                            break;
-                        case "WrapDualInterface.AllowSplitting":
-                            cdi.setAllowSplittingInTile(Value.equals("1"));
-                            break;
-                        case "WrapDualInterface.ExtendedBlockMode":
-                            cdi.setExtendedBlockMode(Integer.parseInt(Value));
-                            break;
-                    }
-                } else if (c instanceof ContainerUltimateEncoder) {
-                    final ContainerUltimateEncoder cue = (ContainerUltimateEncoder) c;
-                    switch (Name) {
-                        case "UltimateEncoder.Encode":
-                            if (Value.equals("0"))
-                                cue.encode();
-                            else
-                                cue.encodeAndMoveToInventory();
-                            break;
-                        case "UltimateEncoder.Clear":
-                            cue.clear();
-                            break;
-                        case "UltimateEncoder.MultiplyByTwo":
-                            cue.multiply(2);
-                            break;
-                        case "UltimateEncoder.MultiplyByThree":
-                            cue.multiply(3);
-                            break;
-                        case "UltimateEncoder.DivideByTwo":
-                            cue.divide(2);
-                            break;
-                        case "UltimateEncoder.DivideByThree":
-                            cue.divide(3);
-                            break;
-                        case "UltimateEncoder.IncreaseByOne":
-                            cue.increase(1);
-                            break;
-                        case "UltimateEncoder.DecreaseByOne":
-                            cue.decrease(1);
-                            break;
-                        case "UltimateEncoder.Combine":
-                            cue.setCombine(Value.equals("1"));
-                            break;
-                        case "UltimateEncoder.Fluid":
-                            cue.setFluidFirst(Value.equals("1"));
-                            break;
+                        case "WrapDualInterface.FluidPacket" -> cdi.setFluidPacketInTile(Value.equals("1"));
+                        case "WrapDualInterface.AllowSplitting" -> cdi.setAllowSplittingInTile(Value.equals("1"));
+                        case "WrapDualInterface.ExtendedBlockMode" -> cdi.setExtendedBlockMode(Integer.parseInt(Value));
                     }
                 }
             });

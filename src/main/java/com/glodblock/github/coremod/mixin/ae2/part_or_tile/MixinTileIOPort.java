@@ -1,4 +1,4 @@
-package com.glodblock.github.coremod.mixin.ae2;
+package com.glodblock.github.coremod.mixin.ae2.part_or_tile;
 
 import appeng.api.storage.IMEInventory;
 import appeng.api.storage.IMEMonitor;

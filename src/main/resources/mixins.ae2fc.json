@@ -6,10 +6,6 @@
   "minVersion": "0.8.5",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "ae2.MixinAEBaseTileAndPart",
-    "ae2.MixinContainerCraftConfirm",
-    "ae2.MixinContainerInterfaceTerminal",
-    "ae2.MixinContainerPatternEncoder",
     "ae2.MixinCraftingCPUCluster",
     "ae2.MixinCraftingTreeNode",
     "ae2.MixinDualityInterface",
@@ -17,12 +13,18 @@
     "ae2.MixinGuiBridge",
     "ae2.MixinNetworkInventoryHandler",
     "ae2.MixinNetworkMonitor",
-    "ae2.MixinPartType",
-    "ae2.MixinTileIOPort"
+    "ae2.container.MixinContainerCraftConfirm",
+    "ae2.container.MixinContainerInterfaceTerminal",
+    "ae2.container.MixinContainerPatternEncoder",
+    "ae2.part_or_tile.MixinAEBaseTileAndPart",
+    "ae2.part_or_tile.MixinPartExpandedProcessingPatternTerminal",
+    "ae2.part_or_tile.MixinPartPatternTerminal",
+    "ae2.part_or_tile.MixinPartType",
+    "ae2.part_or_tile.MixinTileIOPort"
   ],
   "server": [],
   "client": [
-    "ae2.MixinGuiCrafting",
-    "ae2.MixinGuiCraftingStatus"
+    "ae2.gui.MixinGuiCrafting",
+    "ae2.gui.MixinGuiCraftingStatus"
   ]
 }

@@ -53,8 +53,11 @@ public class ClientProxy extends CommonProxy {
     public void init(FMLInitializationEvent event) {
         super.init(event);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> {
+            if (i == 0) {
+                return 0xFFFFFFFF;
+            }
             FluidStack fluid = FakeItemRegister.getStack(s);
-            return fluid != null ? dropColourHandler.getColour(fluid) : 0xFFFFFFFF;
+            return fluid != null ? fluid.getFluid().getColor(fluid) : 0xFFFFFFFF;
         }, FCItems.FLUID_DROP);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> {
             if (i == 0) {
@@ -65,6 +68,9 @@ public class ClientProxy extends CommonProxy {
         }, FCItems.FLUID_PACKET);
         if (ModAndClassUtil.GAS) {
             Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> {
+                if (i == 0) {
+                    return 0xFFFFFFFF;
+                }
                 GasStack gas = FakeItemRegister.getStack(s);
                 return gas != null ? gas.getGas().getTint() | 0xFF000000 : 0xFFFFFFFF;
             }, FCGasItems.GAS_DROP);

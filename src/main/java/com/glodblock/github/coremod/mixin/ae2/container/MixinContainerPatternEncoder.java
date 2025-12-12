@@ -1,4 +1,4 @@
-package com.glodblock.github.coremod.mixin.ae2;
+package com.glodblock.github.coremod.mixin.ae2.container;
 
 import appeng.container.implementations.ContainerPatternEncoder;
 import com.glodblock.github.coremod.CoreModHooks;

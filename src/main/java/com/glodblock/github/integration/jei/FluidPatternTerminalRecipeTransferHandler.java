@@ -4,9 +4,8 @@ import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketValueConfig;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.container.ContainerFluidPatternTerminal;
-import com.glodblock.github.common.part.PartFluidPatternTerminal;
+import com.glodblock.github.interfaces.FCFluidPatternPart;
 import com.glodblock.github.network.CPacketLoadPattern;
-import com.glodblock.github.util.Ae2Reflect;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import mezz.jei.api.recipe.transfer.IRecipeTransferError;
@@ -29,7 +28,7 @@ public class FluidPatternTerminalRecipeTransferHandler implements IRecipeTransfe
     @Override
     public IRecipeTransferError transferRecipe(@Nonnull ContainerFluidPatternTerminal container, @Nonnull IRecipeLayout recipeLayout,
                                                @Nonnull EntityPlayer player, boolean maxTransfer, boolean doTransfer) {
-        if (doTransfer && Ae2Reflect.getPart(container) instanceof PartFluidPatternTerminal) {
+        if (doTransfer && container.getPart() instanceof FCFluidPatternPart) {
             boolean craftMode = container.craftingMode;
             try {
                 if (container.isCraftingMode() && !recipeLayout.getRecipeCategory().getUid().equals(VanillaRecipeCategoryUid.CRAFTING)) {

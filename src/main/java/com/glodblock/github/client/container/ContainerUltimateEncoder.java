@@ -16,14 +16,13 @@ import appeng.container.slot.SlotRestrictedInput;
 import appeng.helpers.InventoryAction;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
-import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.common.tile.TileUltimateEncoder;
 import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.integration.mek.FakeGases;
-import com.glodblock.github.interfaces.PatternConsumer;
+import com.glodblock.github.interfaces.FCFluidPatternContainer;
 import com.glodblock.github.loader.FCItems;
 import com.glodblock.github.util.FluidPatternDetails;
 import com.glodblock.github.util.ModAndClassUtil;
@@ -45,7 +44,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContainerUltimateEncoder extends AEBaseContainer implements IOptionalSlotHost, PatternConsumer {
+public class ContainerUltimateEncoder extends AEBaseContainer implements IOptionalSlotHost, FCFluidPatternContainer {
 
     private final TileUltimateEncoder encoder;
     protected final SlotRestrictedInput patternSlotIN;
@@ -56,7 +55,6 @@ public class ContainerUltimateEncoder extends AEBaseContainer implements IOption
     public boolean combine = false;
     @GuiSync(106)
     public boolean fluidFirst = false;
-
 
     public ContainerUltimateEncoder(InventoryPlayer ipl, TileUltimateEncoder encoder) {
         super(ipl, encoder);
@@ -80,14 +78,14 @@ public class ContainerUltimateEncoder extends AEBaseContainer implements IOption
         this.bindPlayerInventory(ipl, 0, 167);
     }
 
-    public void setCombine(boolean val) {
-        this.combine = val;
-        this.encoder.combine = val;
+    @Override
+    public boolean getCombineMode() {
+        return false;
     }
 
-    public void setFluidFirst(boolean val) {
-        this.fluidFirst = val;
-        this.encoder.fluidFirst = val;
+    public void setCombineMode(boolean val) {
+        this.combine = val;
+        this.encoder.combine = val;
     }
 
     @Override
@@ -408,5 +406,15 @@ public class ContainerUltimateEncoder extends AEBaseContainer implements IOption
     @Override
     public void acceptPattern(Int2ObjectMap<ItemStack[]> inputs, List<ItemStack> outputs, boolean combine) {
         this.encoder.onChangeCrafting(inputs, outputs, combine);
+    }
+
+    @Override
+    public boolean getFluidPlaceMode() {
+        return false;
+    }
+
+    public void setFluidPlaceMode(boolean val) {
+        this.fluidFirst = val;
+        this.encoder.fluidFirst = val;
     }
 }

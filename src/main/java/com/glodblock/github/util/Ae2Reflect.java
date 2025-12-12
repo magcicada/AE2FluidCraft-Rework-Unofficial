@@ -6,14 +6,12 @@ import appeng.api.networking.crafting.ICraftingCPU;
 import appeng.api.networking.security.IActionSource;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.container.ContainerOpenContext;
-import appeng.container.implementations.ContainerPatternEncoder;
 import appeng.container.implementations.CraftingCPURecord;
 import appeng.crafting.MECraftingInventory;
 import appeng.fluids.helper.DualityFluidInterface;
 import appeng.helpers.DualityInterface;
 import appeng.me.cluster.implementations.CraftingCPUCluster;
 import appeng.me.helpers.AENetworkProxy;
-import appeng.parts.reporting.AbstractPartEncoder;
 import appeng.recipes.game.DisassembleRecipe;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.inv.ItemSlot;
@@ -31,13 +29,13 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class Ae2Reflect {
 
     private static final MethodHandle mItemSlot_setExtractable;
     private static final MethodHandle mCPU_getGrid;
     private static final MethodHandle mCPU_postChange;
     private static final MethodHandle mCPU_markDirty;
-    private static final MethodHandle mContain_getPart;
     private static final MethodHandle fGetDisassembleRecipe_nonCellMappings;
     private static final MethodHandle fGetInventory_container;
     private static final MethodHandle fGetCPU_inventory;
@@ -66,7 +64,6 @@ public class Ae2Reflect {
             mCPU_getGrid = reflectMethodHandle(CraftingCPUCluster.class, "getGrid");
             mCPU_postChange = reflectMethodHandle(CraftingCPUCluster.class, "postChange", IAEItemStack.class, IActionSource.class);
             mCPU_markDirty = reflectMethodHandle(CraftingCPUCluster.class, "markDirty");
-            mContain_getPart = reflectMethodHandle(ContainerPatternEncoder.class, new String[]{"getPatternTerminal", "getPart"});
             fGetInventory_container = reflectFieldGetter(InventoryCrafting.class, "eventHandler", "field_70465_c", "c");
             fGetDisassembleRecipe_nonCellMappings = reflectFieldGetter(DisassembleRecipe.class, "nonCellMappings");
             fGetCPU_inventory = reflectFieldGetter(CraftingCPUCluster.class, "inventory");
@@ -234,14 +231,6 @@ public class Ae2Reflect {
 
     public static boolean getCPUComplete(CraftingCPUCluster cpu) {
         return Ae2Reflect.readField(cpu, fGetCPU_isComplete);
-    }
-
-    public static AbstractPartEncoder getPart(ContainerPatternEncoder owner) {
-        try {
-            return (AbstractPartEncoder) mContain_getPart.invoke(owner);
-        } catch (Throwable e) {
-            throw new IllegalStateException("Failed to invoke method: " + mContain_getPart, e);
-        }
     }
 
     public static void postCPUChange(CraftingCPUCluster cpu, IAEItemStack stack, IActionSource src) {

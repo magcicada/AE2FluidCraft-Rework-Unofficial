@@ -95,8 +95,8 @@ public class CPacketLoadPattern implements IMessage {
         public IMessage onMessage(CPacketLoadPattern message, MessageContext ctx) {
             EntityPlayerMP player = ctx.getServerHandler().player;
             player.getServerWorld().addScheduledTask(() -> {
-                if (player.openContainer instanceof PatternConsumer) {
-                    ((PatternConsumer) player.openContainer).acceptPattern(message.crafting, message.output, message.compress);
+                if (player.openContainer instanceof PatternConsumer c) {
+                    c.acceptPattern(message.crafting, message.output, message.compress);
                 }
             });
             return null;

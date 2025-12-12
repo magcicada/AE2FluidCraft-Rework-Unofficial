@@ -16,12 +16,11 @@ import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.item.ItemLargeEncodedPattern;
 import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
-import com.glodblock.github.common.part.PartFluidPatternTerminal;
 import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.integration.mek.FakeGases;
-import com.glodblock.github.interfaces.PatternConsumer;
+import com.glodblock.github.interfaces.FCFluidPatternContainer;
+import com.glodblock.github.interfaces.FCFluidPatternPart;
 import com.glodblock.github.loader.FCItems;
-import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.FluidCraftingPatternDetails;
 import com.glodblock.github.util.FluidPatternDetails;
 import com.glodblock.github.util.ModAndClassUtil;
@@ -44,7 +43,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ContainerFluidPatternTerminal extends ContainerPatternTerm implements PatternConsumer {
+public class ContainerFluidPatternTerminal extends ContainerPatternTerm implements FCFluidPatternContainer {
+
+    private final FCFluidPatternPart part;
+
     @GuiSync(105)
     public boolean combine = false;
     @GuiSync(106)
@@ -52,6 +54,7 @@ public class ContainerFluidPatternTerminal extends ContainerPatternTerm implemen
 
     public ContainerFluidPatternTerminal(InventoryPlayer ip, ITerminalHost monitorable) {
         super(ip, monitorable);
+        part = (FCFluidPatternPart) monitorable;
     }
 
     @Override
@@ -75,6 +78,26 @@ public class ContainerFluidPatternTerminal extends ContainerPatternTerm implemen
         } else if (isPattern(stack)) {
             encodeFluidPattern();
         }
+    }
+
+    @Override
+    public boolean getCombineMode() {
+        return part.getCombineMode();
+    }
+
+    @Override
+    public void setCombineMode(boolean mode) {
+        part.setCombineMode(mode);
+    }
+
+    @Override
+    public boolean getFluidPlaceMode() {
+        return part.getFluidPlaceMode();
+    }
+
+    @Override
+    public void setFluidPlaceMode(boolean mode) {
+        part.setFluidPlaceMode(mode);
     }
 
     public void encodeFluidCraftPattern() {
@@ -229,8 +252,8 @@ public class ContainerFluidPatternTerminal extends ContainerPatternTerm implemen
 
     @Override
     public void acceptPattern(Int2ObjectMap<ItemStack[]> inputs, List<ItemStack> outputs, boolean combine) {
-        if (Ae2Reflect.getPart(this) instanceof PartFluidPatternTerminal) {
-            ((PartFluidPatternTerminal) Ae2Reflect.getPart(this)).onChangeCrafting(inputs, outputs, combine);
+        if (this.getPart() instanceof FCFluidPatternPart p) {
+            p.onChangeCrafting(inputs, outputs, combine);
         }
     }
 
@@ -348,12 +371,12 @@ public class ContainerFluidPatternTerminal extends ContainerPatternTerm implemen
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
         if (Platform.isServer()) {
-            this.combine = ((PartFluidPatternTerminal) Ae2Reflect.getPart(this)).getCombineMode();
-            this.fluidFirst = ((PartFluidPatternTerminal) Ae2Reflect.getPart(this)).getFluidPlaceMode();
+            this.combine = part.getCombineMode();
+            this.fluidFirst = part.getFluidPlaceMode();
         }
     }
 
-    NBTBase createItemTag(ItemStack i) {
+    private NBTBase createItemTag(ItemStack i) {
         NBTTagCompound c = new NBTTagCompound();
         if (!i.isEmpty()) {
             i.writeToNBT(c);

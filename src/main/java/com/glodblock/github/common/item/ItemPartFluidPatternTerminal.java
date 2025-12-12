@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+@Deprecated
 public class ItemPartFluidPatternTerminal extends Item implements IPartItem<PartFluidPatternTerminal> {
 
     public ItemPartFluidPatternTerminal() {

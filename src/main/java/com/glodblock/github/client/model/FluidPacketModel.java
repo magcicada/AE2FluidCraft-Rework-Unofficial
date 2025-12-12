@@ -1,6 +1,6 @@
 package com.glodblock.github.client.model;
 
-import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.util.FluidKey;
 import com.glodblock.github.util.NameConst;
@@ -8,7 +8,11 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.*;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.renderer.block.model.ItemTransformVec3f;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.client.resources.IResourceManager;
@@ -66,7 +70,8 @@ public class FluidPacketModel implements IModel {
 
         @Override
         public boolean accepts(ResourceLocation modelLocation) {
-            return modelLocation.compareTo(NameConst.MODEL_FLUID_PACKET) == 0;
+            return modelLocation.compareTo(NameConst.MODEL_FLUID_PACKET) == 0
+                || modelLocation.compareTo(NameConst.MODEL_FLUID_DROP) == 0;
         }
 
         @Override
@@ -147,7 +152,7 @@ public class FluidPacketModel implements IModel {
             return new OverrideCache();
         }
 
-        protected IBakedModel genDefaultOverrides() {
+        IBakedModel genDefaultOverrides() {
             return ((OverrideCache) this.overrides).resolve(new FluidStack(FluidRegistry.WATER, Fluid.BUCKET_VOLUME));
         }
 
@@ -166,7 +171,7 @@ public class FluidPacketModel implements IModel {
             @Nonnull
             public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack,
                                                @Nullable World world, @Nullable EntityLivingBase entity) {
-                if (!(stack.getItem() instanceof ItemFluidPacket)) {
+                if (!(FakeFluids.isFluidFakeItem(stack))) {
                     return originalModel;
                 }
                 FluidStack fluid = FakeItemRegister.getStack(stack);

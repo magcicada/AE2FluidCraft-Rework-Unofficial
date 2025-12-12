@@ -1,4 +1,4 @@
-package com.glodblock.github.coremod.mixin.ae2;
+package com.glodblock.github.coremod.mixin.ae2.gui;
 
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.implementations.GuiCraftConfirm;

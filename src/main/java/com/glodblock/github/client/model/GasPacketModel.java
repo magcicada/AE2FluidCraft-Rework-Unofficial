@@ -1,7 +1,7 @@
 package com.glodblock.github.client.model;
 
-import com.glodblock.github.common.item.ItemGasPacket;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
+import com.glodblock.github.integration.mek.FakeGases;
 import com.glodblock.github.util.NameConst;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -52,7 +52,8 @@ public class GasPacketModel extends FluidPacketModel {
 
         @Override
         public boolean accepts(ResourceLocation modelLocation) {
-            return modelLocation.compareTo(NameConst.MODEL_GAS_PACKET) == 0;
+            return modelLocation.compareTo(NameConst.MODEL_GAS_PACKET) == 0
+                || modelLocation.compareTo(NameConst.MODEL_GAS_DROP) == 0;
         }
 
         @Override
@@ -73,7 +74,7 @@ public class GasPacketModel extends FluidPacketModel {
             return new OverrideCache();
         }
 
-        protected OverrideCache.OverrideModel genDefaultOverrides() {
+        OverrideCache.OverrideModel genDefaultOverrides() {
             return ((OverrideCache) this.overrides).resolve(new GasStack(MekanismFluids.Hydrogen, Fluid.BUCKET_VOLUME));
         }
 
@@ -92,7 +93,7 @@ public class GasPacketModel extends FluidPacketModel {
             @Nonnull
             public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, ItemStack stack,
                                                @Nullable World world, @Nullable EntityLivingBase entity) {
-                if (!(stack.getItem() instanceof ItemGasPacket)) {
+                if (!(FakeGases.isGasFakeItem(stack))) {
                     return originalModel;
                 }
                 GasStack gas = FakeItemRegister.getStack(stack);

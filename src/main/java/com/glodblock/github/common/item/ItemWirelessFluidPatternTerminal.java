@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
+@Deprecated
 public class ItemWirelessFluidPatternTerminal extends ToolWirelessTerminal {
 
     private static final int OFFHAND_SLOT = 40;

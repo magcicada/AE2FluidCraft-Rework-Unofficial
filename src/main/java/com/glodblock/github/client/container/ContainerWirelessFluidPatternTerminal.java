@@ -25,7 +25,7 @@ import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.integration.mek.FakeGases;
-import com.glodblock.github.interfaces.PatternConsumer;
+import com.glodblock.github.interfaces.FCFluidPatternContainer;
 import com.glodblock.github.loader.FCItems;
 import com.glodblock.github.util.FluidCraftingPatternDetails;
 import com.glodblock.github.util.FluidPatternDetails;
@@ -51,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatternTerminal implements PatternConsumer, IUpgradeableCellContainer, IInventorySlotAware {
+public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatternTerminal implements IUpgradeableCellContainer, IInventorySlotAware, FCFluidPatternContainer {
 
     private final WirelessTerminalGuiObject wirelessTerminalGUIObject;
     @GuiSync(105)
@@ -447,6 +447,16 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
         } else {
             return name.equals("output") ? this.output : super.getInventoryByName(name);
         }
+    }
+
+    @Override
+    public boolean getCombineMode() {
+        return combine;
+    }
+
+    @Override
+    public boolean getFluidPlaceMode() {
+        return fluidFirst;
     }
 
     public void setCombineMode(boolean value) {

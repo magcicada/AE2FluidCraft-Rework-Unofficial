@@ -13,6 +13,8 @@ import appeng.api.storage.data.IItemList;
 import appeng.core.localization.PlayerMessages;
 import appeng.fluids.util.AEFluidInventory;
 import appeng.fluids.util.AEFluidStack;
+import appeng.parts.reporting.AbstractPartEncoder;
+import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import com.glodblock.github.common.item.ItemFluidPacket;
@@ -26,6 +28,7 @@ import com.mekeng.github.common.me.data.IAEGasStack;
 import com.mekeng.github.common.me.storage.IGasStorageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.EncoderException;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import mekanism.api.gas.GasStack;
 import mekanism.api.gas.GasTankInfo;
 import mekanism.common.capabilities.Capabilities;
@@ -42,6 +45,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.Optional;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
@@ -117,13 +121,13 @@ public final class Util {
 
     public static void writeFluidInventoryToBuffer(@Nonnull AEFluidInventory inv, ByteBuf data) throws IOException {
         int fluidMask = 0;
-        for (int i = 0; i < inv.getSlots(); i++) {
+        for (int i = 0; i < inv.getSlots(); ++i) {
             if (inv.getFluidInSlot(i) != null) {
                 fluidMask |= 1 << i;
             }
         }
         data.writeByte(fluidMask);
-        for (int i = 0; i < inv.getSlots(); i++) {
+        for (int i = 0; i < inv.getSlots(); ++i) {
             IAEFluidStack fluid = inv.getFluidInSlot(i);
             if (fluid != null) {
                 fluid.writeToPacket(data);
@@ -134,7 +138,7 @@ public final class Util {
     public static boolean readFluidInventoryToBuffer(@Nonnull AEFluidInventory inv, ByteBuf data) throws IOException {
         boolean changed = false;
         int fluidMask = data.readByte();
-        for (int i = 0; i < inv.getSlots(); i++) {
+        for (int i = 0; i < inv.getSlots(); ++i) {
             if ((fluidMask & (1 << i)) != 0) {
                 IAEFluidStack fluid = AEFluidStack.fromPacket(data);
                 if (fluid != null) { // this shouldn't happen, but better safe than sorry
@@ -173,7 +177,7 @@ public final class Util {
     }
 
     public static void clearItemInventory(IItemHandlerModifiable inv) {
-        for (int i = 0; i < inv.getSlots(); i++) {
+        for (int i = 0; i < inv.getSlots(); ++i) {
             inv.setStackInSlot(i, ItemStack.EMPTY);
         }
     }
@@ -414,6 +418,34 @@ public final class Util {
             InventoryHandler.openGui(player, w, new BlockPos(playerInvSlot, isBaubleSlot ? 1 : 0, Integer.MIN_VALUE), EnumFacing.DOWN, gui);
         } else {
             player.sendMessage(PlayerMessages.DeviceNotPowered.get());
+        }
+    }
+
+    public static void onPatternTerminalChangeCrafting(AbstractPartEncoder part, boolean noCraftingMode, Int2ObjectMap<ItemStack[]> inputs, List<ItemStack> outputs, boolean combine) {
+        IItemHandler crafting = part.getInventoryByName("crafting");
+        IItemHandler output = part.getInventoryByName("output");
+        IItemList<IAEItemStack> storageList = part.getInventory(getItemChannel()) == null ?
+            null : part.getInventory(getItemChannel()).getStorageList();
+        if (crafting instanceof AppEngInternalInventory && output instanceof AppEngInternalInventory) {
+            clearItemInventory((IItemHandlerModifiable) crafting);
+            clearItemInventory((IItemHandlerModifiable) output);
+            ItemStack[] fuzzyFind = new ItemStack[findMax(inputs.keySet()) + 1];
+            for (int index : inputs.keySet()) {
+                fuzzyTransferItems(index, inputs.get(index), fuzzyFind, storageList);
+            }
+            if (combine && noCraftingMode) {
+                fuzzyFind = compress(fuzzyFind);
+            }
+            int bound = Math.min(crafting.getSlots(), fuzzyFind.length);
+            for (int x = 0; x < bound; ++x) {
+                final ItemStack item = fuzzyFind[x];
+                ((AppEngInternalInventory) crafting).setStackInSlot(x, item == null ? ItemStack.EMPTY : item);
+            }
+            bound = Math.min(output.getSlots(), outputs.size());
+            for (int x = 0; x < bound; ++x) {
+                final ItemStack item = outputs.get(x);
+                ((AppEngInternalInventory) output).setStackInSlot(x, item == null ? ItemStack.EMPTY : item);
+            }
         }
     }
 

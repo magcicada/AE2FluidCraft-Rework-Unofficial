@@ -35,6 +35,7 @@ public class MixinNetworkMonitor<T extends IAEStack<T>> implements FCNetworkMoni
     @Final
     @Nonnull
     private IStorageChannel<?> myChannel;
+
     @Shadow
     @Final
     @Nonnull
@@ -56,7 +57,7 @@ public class MixinNetworkMonitor<T extends IAEStack<T>> implements FCNetworkMoni
                     list.findFuzzy(
                         drop.computeIfAbsent(Util.getFluidChannel(), s -> AEItemStack.fromItemStack(new ItemStack(FCItems.FLUID_DROP, 1))),
                         FuzzyMode.IGNORE_ALL
-                    ).forEach(IAEItemStack::reset);
+                    ).forEach(i -> i.setStackSize(0));
 
                     for (var t : monitor.getStorageList()) {
                         var i = cacheMap.computeIfAbsent(t, ti -> FakeItemRegister.packAEStackLong(ti, FCItems.FLUID_DROP));
@@ -77,7 +78,7 @@ public class MixinNetworkMonitor<T extends IAEStack<T>> implements FCNetworkMoni
                         list.findFuzzy(
                             drop.computeIfAbsent(Util.getGasChannel(), s -> AEItemStack.fromItemStack(new ItemStack(FCGasItems.GAS_DROP, 1))),
                             FuzzyMode.IGNORE_ALL
-                        ).forEach(IAEItemStack::reset);
+                        ).forEach(i -> i.setStackSize(0));
 
                         for (var t : monitor.getStorageList()) {
                             var i = cacheMap.computeIfAbsent(t, ti -> FakeItemRegister.packAEStackLong(ti, FCGasItems.GAS_DROP));

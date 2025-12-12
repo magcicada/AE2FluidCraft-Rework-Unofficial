@@ -3,7 +3,6 @@ package com.glodblock.github.common.part;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.parts.IPartModel;
 import appeng.api.storage.data.IAEItemStack;
-import appeng.api.storage.data.IItemList;
 import appeng.core.sync.GuiBridge;
 import appeng.items.misc.ItemEncodedPattern;
 import appeng.items.parts.PartModels;
@@ -15,12 +14,12 @@ import appeng.util.inv.InvOperation;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.common.item.ItemFluidDrop;
 import com.glodblock.github.common.item.ItemFluidEncodedPattern;
-import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.item.ItemLargeEncodedPattern;
 import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.integration.mek.FakeGases;
+import com.glodblock.github.interfaces.FCFluidPatternPart;
 import com.glodblock.github.inventory.ExAppEngInternalInventory;
 import com.glodblock.github.inventory.GuiType;
 import com.glodblock.github.inventory.InventoryHandler;
@@ -37,12 +36,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class PartExtendedFluidPatternTerminal extends PartExpandedProcessingPatternTerminal {
+public class PartExtendedFluidPatternTerminal extends PartExpandedProcessingPatternTerminal implements FCFluidPatternPart {
 
     private boolean combine = false;
     private boolean fluidFirst = false;
@@ -139,31 +137,7 @@ public class PartExtendedFluidPatternTerminal extends PartExpandedProcessingPatt
     }
 
     public void onChangeCrafting(Int2ObjectMap<ItemStack[]> inputs, List<ItemStack> outputs, boolean combine) {
-        IItemHandler crafting = this.getInventoryByName("crafting");
-        IItemHandler output = this.getInventoryByName("output");
-        IItemList<IAEItemStack> storageList = this.getInventory(Util.getItemChannel()) == null ?
-                null : this.getInventory(Util.getItemChannel()).getStorageList();
-        if (crafting instanceof AppEngInternalInventory && output instanceof AppEngInternalInventory) {
-            Util.clearItemInventory((IItemHandlerModifiable) crafting);
-            Util.clearItemInventory((IItemHandlerModifiable) output);
-            ItemStack[] fuzzyFind = new ItemStack[Util.findMax(inputs.keySet()) + 1];
-            for (int index : inputs.keySet()) {
-                Util.fuzzyTransferItems(index, inputs.get(index), fuzzyFind, storageList);
-            }
-            if (combine) {
-                fuzzyFind = Util.compress(fuzzyFind);
-            }
-            int bound = Math.min(crafting.getSlots(), fuzzyFind.length);
-            for (int x = 0; x < bound; x++) {
-                final ItemStack item = fuzzyFind[x];
-                ((AppEngInternalInventory) crafting).setStackInSlot(x, item == null ? ItemStack.EMPTY : item);
-            }
-            bound = Math.min(output.getSlots(), outputs.size());
-            for (int x = 0; x < bound; x++) {
-                final ItemStack item = outputs.get(x);
-                ((AppEngInternalInventory) output).setStackInSlot(x, item == null ? ItemStack.EMPTY : item);
-            }
-        }
+        Util.onPatternTerminalChangeCrafting(this, true, inputs, outputs, combine);
     }
 
     @Override

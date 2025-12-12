@@ -16,12 +16,11 @@ import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.common.item.ItemLargeEncodedPattern;
 import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
-import com.glodblock.github.common.part.PartExtendedFluidPatternTerminal;
 import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.integration.mek.FakeGases;
-import com.glodblock.github.interfaces.PatternConsumer;
+import com.glodblock.github.interfaces.FCFluidPatternContainer;
+import com.glodblock.github.interfaces.FCFluidPatternPart;
 import com.glodblock.github.loader.FCItems;
-import com.glodblock.github.util.Ae2Reflect;
 import com.glodblock.github.util.FluidPatternDetails;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
@@ -39,8 +38,8 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContainerExtendedFluidPatternTerminal extends ContainerExpandedProcessingPatternTerm implements PatternConsumer {
-    public final ITerminalHost part;
+public class ContainerExtendedFluidPatternTerminal extends ContainerExpandedProcessingPatternTerm implements FCFluidPatternContainer {
+    public final FCFluidPatternPart part;
 
     @GuiSync(105)
     public boolean combine = false;
@@ -49,7 +48,7 @@ public class ContainerExtendedFluidPatternTerminal extends ContainerExpandedProc
 
     public ContainerExtendedFluidPatternTerminal(InventoryPlayer ip, ITerminalHost monitorable) {
         super(ip, monitorable);
-        part = monitorable;
+        part = (FCFluidPatternPart) monitorable;
         this.craftingMode = false;
     }
 
@@ -278,18 +277,35 @@ public class ContainerExtendedFluidPatternTerminal extends ContainerExpandedProc
 
     @Override
     public void acceptPattern(Int2ObjectMap<ItemStack[]> inputs, List<ItemStack> outputs, boolean combine) {
-        if (part instanceof PartExtendedFluidPatternTerminal) {
-            ((PartExtendedFluidPatternTerminal) part).onChangeCrafting(inputs, outputs, combine);
-        }
+        this.part.onChangeCrafting(inputs, outputs, combine);
     }
 
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
         if (Platform.isServer()) {
-            this.combine = ((PartExtendedFluidPatternTerminal) Ae2Reflect.getPart(this)).getCombineMode();
-            this.fluidFirst = ((PartExtendedFluidPatternTerminal) Ae2Reflect.getPart(this)).getFluidPlaceMode();
+            this.combine = this.part.getCombineMode();
+            this.fluidFirst = this.part.getFluidPlaceMode();
         }
     }
 
+    @Override
+    public boolean getCombineMode() {
+        return part.getCombineMode();
+    }
+
+    @Override
+    public void setCombineMode(boolean mode) {
+        part.setCombineMode(mode);
+    }
+
+    @Override
+    public boolean getFluidPlaceMode() {
+        return part.getFluidPlaceMode();
+    }
+
+    @Override
+    public void setFluidPlaceMode(boolean mode) {
+        part.setFluidPlaceMode(mode);
+    }
 }

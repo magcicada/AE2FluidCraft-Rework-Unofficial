@@ -1,4 +1,4 @@
-package com.glodblock.github.coremod.mixin.ae2;
+package com.glodblock.github.coremod.mixin.ae2.part_or_tile;
 
 import appeng.parts.AEBasePart;
 import appeng.tile.AEBaseTile;

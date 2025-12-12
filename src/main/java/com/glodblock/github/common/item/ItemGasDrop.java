@@ -1,22 +1,18 @@
 package com.glodblock.github.common.item;
 
 import com.glodblock.github.common.item.fake.FakeItemRegister;
+import com.glodblock.github.interfaces.HasCustomModel;
 import com.glodblock.github.util.NameConst;
 import mekanism.api.gas.GasStack;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.translation.I18n;
-import net.minecraft.world.World;
+import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
 
-public class ItemGasDrop extends Item {
+public class ItemGasDrop extends Item implements HasCustomModel {
 
     @Override
     public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
@@ -28,23 +24,16 @@ public class ItemGasDrop extends Item {
         return false;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     @Nonnull
     public String getItemStackDisplayName(@Nonnull ItemStack stack) {
         GasStack gas = FakeItemRegister.getStack(stack);
-        return I18n.translateToLocalFormatted(getTranslationKey(stack) + ".name", gas != null ? gas.getGas().getLocalizedName() : "???");
+        return gas != null ? gas.getGas().getLocalizedName() : "???";
     }
 
-    @SuppressWarnings("deprecation")
     @Override
-    public void addInformation(@Nonnull ItemStack stack, @Nullable World world, @Nonnull List<String> tooltip, @Nonnull ITooltipFlag flags) {
-        GasStack gas = FakeItemRegister.getStack(stack);
-        if (gas != null) {
-            tooltip.add(String.format(TextFormatting.GRAY + "%s, 1 mB", gas.getGas().getLocalizedName()));
-        } else {
-            tooltip.add(TextFormatting.RED + I18n.translateToLocal(NameConst.TT_INVALID_FLUID));
-        }
+    public ResourceLocation getCustomModelPath() {
+        return NameConst.MODEL_GAS_DROP;
     }
 
 }

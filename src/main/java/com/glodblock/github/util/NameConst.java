@@ -63,6 +63,8 @@ public final class NameConst {
     public static final ResourceLocation MODEL_DENSE_CRAFT_ENCODED_PATTERN = FluidCraft.resource("builtin/dense_craft_encoded_pattern");
     public static final ResourceLocation MODEL_LARGE_ITEM_ENCODED_PATTERN = FluidCraft.resource("builtin/large_item_encoded_pattern");
     public static final ResourceLocation MODEL_FLUID_PACKET = FluidCraft.resource("builtin/fluid_packet");
+    public static final ResourceLocation MODEL_FLUID_DROP = FluidCraft.resource("builtin/fluid_drop");
     public static final ResourceLocation MODEL_GAS_PACKET = FluidCraft.resource("builtin/gas_packet");
+    public static final ResourceLocation MODEL_GAS_DROP = FluidCraft.resource("builtin/gas_drop");
 
 }

@@ -1,4 +1,4 @@
-package com.glodblock.github.coremod.mixin.ae2;
+package com.glodblock.github.coremod.mixin.ae2.container;
 
 import appeng.api.networking.crafting.ICraftingJob;
 import appeng.container.implementations.ContainerCraftConfirm;
