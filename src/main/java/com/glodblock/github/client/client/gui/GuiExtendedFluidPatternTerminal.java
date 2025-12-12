@@ -4,7 +4,6 @@ import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.implementations.GuiExpandedProcessingPatternTerm;
 import appeng.client.gui.widgets.GuiTabButton;
-import appeng.client.me.SlotME;
 import appeng.client.render.StackSizeRenderer;
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.OptionalSlotFake;
@@ -183,9 +182,6 @@ public class GuiExtendedFluidPatternTerminal extends GuiExpandedProcessingPatter
         var slot = this.hoveredSlot;
         if (slot instanceof SlotFake) {
             if (UtilClient.renderPatternSlotTip(this, mouseX, mouseY)) return;
-        }
-        if (slot instanceof SlotME) {
-            if (UtilClient.renderContainerToolTip(this, mouseX, mouseY)) return;
         }
         super.renderHoveredToolTip(mouseX, mouseY);
     }

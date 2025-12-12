@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@SuppressWarnings({"unchecked", "DataFlowIssue"})
+@SuppressWarnings("DataFlowIssue")
 @Mixin(value = NetworkInventoryHandler.class, remap = false)
 public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implements FCNetworkInventoryHandler {
 
@@ -69,7 +69,7 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
     @Inject(method = "injectItems", at = @At(value = "INVOKE", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", ordinal = 1), cancellable = true)
     private void notItemInject(T input, Actionable mode, IActionSource src, CallbackInfoReturnable<T> cir) {
         if (input == null || input instanceof IAEItemStack) return;
-        if (src instanceof FakeMonitor.FakeMonitorSource) return;
+        if (src instanceof FakeMonitor.FakeMonitorSource || mode == Actionable.SIMULATE) return;
         var drop = Util.packAEStackToDrop(input);
         if (drop != null) {
             this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
@@ -94,7 +94,7 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
                 work = true;
             }
         } else {
-            if (src instanceof FakeMonitor.FakeMonitorSource) return;
+            if (src instanceof FakeMonitor.FakeMonitorSource || mode == Actionable.SIMULATE) return;
             var drop = Util.packAEStackToDrop(request);
             if (drop != null) {
                 this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
