@@ -28,10 +28,12 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import org.spongepowered.asm.mixin.Unique;
 import thaumicenergistics.container.ContainerBaseTerminal;
 
 import java.io.IOException;
@@ -126,44 +128,8 @@ public class CpacketMEMonitorableAction implements IMessage {
                         player.inventory.placeItemBackInInventory(player.world, cc);
                     } else player.inventory.setItemStack(fh.getContainer());
                     updateHeld(player);
-                    return null;
                 } else if (ModAndClassUtil.GAS && message.type == GAS && h.getItem() instanceof IGasItem ig) {
-                    final var allGas = ig.getGas(ch);
-                    final var allAmount = allGas == null ? 0 : allGas.amount;
-                    GasStack gas = null;
-                    if (!message.obj.isEmpty()) {
-                        gas = GasStack.readFromNBT(message.obj);
-                        if (gas != null) {
-                            if (allGas != null && allGas.amount > 0) {
-                                if (!allGas.isGasEqual(gas)) drain = true;
-                            }
-                        } else drain = true;
-                    } else drain = true;
-                    final var gasStorage = grid.getInventory(Util.getGasChannel());
-                    AEGasStack allAEGas;
-                    if (drain) {
-                        allAEGas = AEGasStack.of(allGas);
-                        if (allAEGas == null) return null;
-                        final var a = gasStorage.injectItems(allAEGas, Actionable.SIMULATE, source);
-                        final var size = allAEGas.getStackSize() - (a == null ? 0 : a.getStackSize());
-                        gasStorage.injectItems(allAEGas.setStackSize(size), Actionable.MODULATE, source);
-                        allGas.amount -= (int) size;
-                        ig.setGas(ch, allGas);
-                    } else {
-                        allAEGas = AEGasStack.of(gas);
-                        if (allAEGas == null) return null;
-                        final var a = gasStorage.extractItems(allAEGas, Actionable.SIMULATE, source);
-                        final var size = Math.min(ig.getMaxGas(ch) - allAmount, (int) a.getStackSize());
-                        gasStorage.extractItems(allAEGas.setStackSize(size), Actionable.MODULATE, source);
-                        gas.amount = size + allAmount;
-                        ig.setGas(ch, gas);
-                    }
-                    if (h.getCount() > 1) {
-                        h.shrink(1);
-                        player.inventory.placeItemBackInInventory(player.world, ch);
-                    } else player.inventory.setItemStack(ch);
-                    updateHeld(player);
-                    return null;
+                    mek$Work(message, ig, ch, grid, source, h, player);
                 }
             } else if (message.type == FLUID_OPERATE) {
                 final FluidStack fluid;
@@ -198,6 +164,47 @@ public class CpacketMEMonitorableAction implements IMessage {
             return null;
         }
 
+        @Unique
+        @Optional.Method(modid = "mekeng")
+        private void mek$Work(CpacketMEMonitorableAction message, IGasItem ig, ItemStack ch, IStorageGrid grid, IActionSource source, ItemStack h, EntityPlayerMP player) {
+            boolean drain = false;
+            final var allGas = ig.getGas(ch);
+            final var allAmount = allGas == null ? 0 : allGas.amount;
+            GasStack gas = null;
+            if (!message.obj.isEmpty()) {
+                gas = GasStack.readFromNBT(message.obj);
+                if (gas != null) {
+                    if (allGas != null && allGas.amount > 0) {
+                        if (!allGas.isGasEqual(gas)) drain = true;
+                    }
+                } else drain = true;
+            } else drain = true;
+            final var gasStorage = grid.getInventory(Util.getGasChannel());
+            AEGasStack allAEGas;
+            if (drain) {
+                allAEGas = AEGasStack.of(allGas);
+                if (allAEGas == null) return;
+                final var a = gasStorage.injectItems(allAEGas, Actionable.SIMULATE, source);
+                final var size = allAEGas.getStackSize() - (a == null ? 0 : a.getStackSize());
+                gasStorage.injectItems(allAEGas.setStackSize(size), Actionable.MODULATE, source);
+                allGas.amount -= (int) size;
+                ig.setGas(ch, allGas);
+            } else {
+                allAEGas = AEGasStack.of(gas);
+                if (allAEGas == null) return;
+                final var a = gasStorage.extractItems(allAEGas, Actionable.SIMULATE, source);
+                final var size = Math.min(ig.getMaxGas(ch) - allAmount, (int) a.getStackSize());
+                gasStorage.extractItems(allAEGas.setStackSize(size), Actionable.MODULATE, source);
+                gas.amount = size + allAmount;
+                ig.setGas(ch, gas);
+            }
+            if (h.getCount() > 1) {
+                h.shrink(1);
+                player.inventory.placeItemBackInInventory(player.world, ch);
+            } else player.inventory.setItemStack(ch);
+            updateHeld(player);
+        }
+
         private void updateHeld(EntityPlayerMP p) {
             if (Platform.isServer()) {
                 try {
@@ -206,7 +213,6 @@ public class CpacketMEMonitorableAction implements IMessage {
                     AELog.debug(e);
                 }
             }
-
         }
     }
 }

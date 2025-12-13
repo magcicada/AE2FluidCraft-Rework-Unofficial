@@ -22,6 +22,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
@@ -114,16 +115,7 @@ public abstract class MixinGuiMEMonitorable extends AEBaseMEGui {
                             return;
                         }
                         if (ModAndClassUtil.GAS) {
-                            final boolean g;
-                            if (s.getAEStack() != null) {
-                                g = s.getAEStack().getItem() == FCGasItems.GAS_DROP;
-                            } else g = false;
-                            if (h.getItem() instanceof IGasItem && (g || Util.getGasFromItem(h) != null)) {
-                                GasStack gas = g ? FakeItemRegister.getStack(s.getAEStack()) : null;
-                                FluidCraft.proxy.netHandler.sendToServer(new CpacketMEMonitorableAction
-                                    (CpacketMEMonitorableAction.GAS, gas != null ? gas.write(new NBTTagCompound()) : new NBTTagCompound()));
-                                return;
-                            }
+                            if (mek$handleMouseClick(s, h)) return;
                         }
                     }
                 }
@@ -142,5 +134,21 @@ public abstract class MixinGuiMEMonitorable extends AEBaseMEGui {
             }
         }
         super.handleMouseClick(slot, slotIdx, mouseButton, clickType);
+    }
+
+    @Unique
+    @Optional.Method(modid = "mekeng")
+    protected boolean mek$handleMouseClick(SlotME s, ItemStack h) {
+        final boolean g;
+        if (s.getAEStack() != null) {
+            g = s.getAEStack().getItem() == FCGasItems.GAS_DROP;
+        } else g = false;
+        if (h.getItem() instanceof IGasItem && (g || Util.getGasFromItem(h) != null)) {
+            GasStack gas = g ? FakeItemRegister.getStack(s.getAEStack()) : null;
+            FluidCraft.proxy.netHandler.sendToServer(new CpacketMEMonitorableAction
+                (CpacketMEMonitorableAction.GAS, gas != null ? gas.write(new NBTTagCompound()) : new NBTTagCompound()));
+            return true;
+        }
+        return false;
     }
 }

@@ -19,6 +19,7 @@ import mekanism.api.gas.IGasItem;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
@@ -125,22 +126,7 @@ public abstract class MixinGuiArcaneTerminal extends GuiAbstractTerminal<IAEItem
                             return;
                         }
                         if (ModAndClassUtil.GAS) {
-                            final boolean g;
-                            if (s.getAEStack() != null) {
-                                if (s.getAEStack() instanceof IAEItemStack stack) {
-                                    g = stack.getItem() == FCGasItems.GAS_DROP;
-                                } else {
-                                    ci.cancel();
-                                    return;
-                                }
-                            } else g = false;
-                            if (h.getItem() instanceof IGasItem && (g || Util.getGasFromItem(h) != null)) {
-                                GasStack gas = g ? FakeItemRegister.getStack((IAEItemStack) s.getAEStack()) : null;
-                                FluidCraft.proxy.netHandler.sendToServer(new CpacketMEMonitorableAction
-                                    (CpacketMEMonitorableAction.GAS, gas != null ? gas.write(new NBTTagCompound()) : new NBTTagCompound()));
-                                ci.cancel();
-                                return;
-                            }
+                            if (mek$handleMouseClick(s, h, ci)) return;
                         }
                     }
                 }
@@ -160,5 +146,27 @@ public abstract class MixinGuiArcaneTerminal extends GuiAbstractTerminal<IAEItem
                 }
             }
         }
+    }
+
+    @Unique
+    @Optional.Method(modid = "mekeng")
+    protected boolean mek$handleMouseClick(SlotME s, ItemStack h, CallbackInfo ci) {
+        final boolean g;
+        if (s.getAEStack() != null) {
+            if (s.getAEStack() instanceof IAEItemStack stack) {
+                g = stack.getItem() == FCGasItems.GAS_DROP;
+            } else {
+                ci.cancel();
+                return true;
+            }
+        } else g = false;
+        if (h.getItem() instanceof IGasItem && (g || Util.getGasFromItem(h) != null)) {
+            GasStack gas = g ? FakeItemRegister.getStack((IAEItemStack) s.getAEStack()) : null;
+            FluidCraft.proxy.netHandler.sendToServer(new CpacketMEMonitorableAction
+                (CpacketMEMonitorableAction.GAS, gas != null ? gas.write(new NBTTagCompound()) : new NBTTagCompound()));
+            ci.cancel();
+            return true;
+        }
+        return false;
     }
 }
