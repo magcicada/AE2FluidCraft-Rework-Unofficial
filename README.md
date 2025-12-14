@@ -1,9 +1,4 @@
-
-Port with permission from phantamanta44.
-
-# AE2 Fluid Crafting Rework
-
-[![Downloads](https://cf.way2muchnoise.eu/full_623955_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/ae2-fluid-crafting-rework) ![MCVsrsion](https://cf.way2muchnoise.eu/versions/623955.svg)
+# AE2 Fluid Crafting Rework - Unofficial
 
 Put fluids in the pattern!
 
@@ -15,25 +10,17 @@ However, it is changed now! With **AE2 Fluid Crafting** you can write patterns w
 
 This is a rework and ported version of [ae2-fluid-crafting](https://github.com/phantamanta44/ae2-fluid-crafting)
 
-## Features
+Additional extensions based on [AE2 Fluid Craft-Rework](https://github.com/AE2-UEL/AE2FluidCraft-Rework?tab=readme-ov-file)
 
- - You can code fluid patterns on fluid terminal directly.
- - Mult/Div/Add/Sub Button also works on fluid.
- - An extended fluid terminal with 16 inputs and 4 outputs.
- - You can add or decrease fluid's amount by clicking with container.
- - Fluid Pattern can display its contents when put on pattern terminal.
- - [1.12.2] Fix the fluid amount display error when removing fluid.
- - [1.12.2] Upgrade cards can be inserted in Dual Interface.
- - [1.12.2] Fluid pattern is searchable in interface terminal.
- - [1.12.2] Fix crash when using block mode, fluid will also be considered as blockable.
- - [1.12.2] Fluid export bus supports crafting card.
+## Features
+Everything is based on https://github.com/AE2-UEL/AE2FluidCraft-Rework?tab=readme-ov-file ,but some more usable modifications have been made
+
+  - No longer need the ME Fluid Discretizer!
+  - Now Fluid Drop appears in your terminal in a more elegant way—I mean, as shown in the image below.
+  - You can no longer take Fluid Drop directly from the terminal, but you can interact with it using a container, just like in the fluid terminal.
+  - Work with the original Pattern Terminal instead of the Fluid Pattern Terminal, but you can still use the Fluid Pattern Terminal from old saves.
 
 ## Installation
-
-### 1.7.10
-Any version of AE2(Both Official AE2 and GTNH edition AE2 works).
-
-**Extra Cells isn't needed**
 
 ### 1.12.2
 Unofficial AE2([PAE2](https://www.curseforge.com/minecraft/mc-mods/ae2-extended-life)).
@@ -42,9 +29,13 @@ You can directly upgrade origin AE2FC2 in your old save.
 
 Official AE2 isn't supported, you can use origin [AE2FC](https://github.com/phantamanta44/ae2-fluid-crafting) if you are playing with Official AE2.
 
-## How to Use It
-https://github.com/GlodBlock/AE2FluidCraft-Rework/wiki
-
 ## Credited Works
 
 E. Geng(@phantamanta44) and KilaBash (@Yefancy) - Their amazing origin work in 1.12.
+@GlodBlock - Improvements to this mod and support for MEK projects
+
+## Some Content Display
+
+![](gallery/20251214-170804.png)
+![](gallery/20251214-171441.png)
+![](gallery/20251214-171459.png)
