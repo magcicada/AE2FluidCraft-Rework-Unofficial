@@ -38,7 +38,7 @@ public abstract class MixinGridStorageCache {
 
     @Inject(method = "buildNetworkStorage", at = @At("RETURN"))
     public void onBuild(final IStorageChannel<?> chan, final CallbackInfoReturnable<NetworkInventoryHandler<?>> cir) {
-        final var m = ((FCNetworkMonitor) this.storageMonitors.get(Util.getItemChannel()));
+        final var m = (FCNetworkMonitor) this.storageMonitors.get(Util.getItemChannel());
         ((FCNetworkInventoryHandler) cir.getReturnValue()).init(m);
     }
 
