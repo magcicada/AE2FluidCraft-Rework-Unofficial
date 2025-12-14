@@ -1,4 +1,5 @@
 # AE2 Fluid Crafting Rework - Unofficial
+[![MCVersion](http://cf.way2muchnoise.eu/versions/1404390.svg)](https://www.curseforge.com/minecraft/mc-mods/ae2fluidcraft-rework-unofficial)
 
 Put fluids in the pattern!
 
@@ -10,7 +11,7 @@ However, it is changed now! With **AE2 Fluid Crafting** you can write patterns w
 
 This is a rework and ported version of [ae2-fluid-crafting](https://github.com/phantamanta44/ae2-fluid-crafting)
 
-Additional extensions based on [AE2 Fluid Craft-Rework](https://github.com/AE2-UEL/AE2FluidCraft-Rework?tab=readme-ov-file)
+Fork based on [AE2 Fluid Craft-Rework](https://github.com/AE2-UEL/AE2FluidCraft-Rework?tab=readme-ov-file)
 
 ## Features
 Everything is based on https://github.com/AE2-UEL/AE2FluidCraft-Rework?tab=readme-ov-file ,but some more usable modifications have been made
