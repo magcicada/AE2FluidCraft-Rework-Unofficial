@@ -74,7 +74,7 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
         var drop = Util.packAEStackToDrop(input);
         if (drop != null) {
             this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
-            cir.setReturnValue(FakeItemRegister.getStack(monitor.injectItems(drop, mode, src)));
+            cir.setReturnValue(FakeItemRegister.getAEStack(monitor.injectItems(drop, mode, src)));
             this.diveList((NetworkInventoryHandler<T>) (Object) this, mode);
         } else {
             return;
@@ -99,7 +99,7 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
             var drop = Util.packAEStackToDrop(request);
             if (drop != null) {
                 this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
-                cir.setReturnValue(FakeItemRegister.getStack(monitor.extractItems(drop, mode, src)));
+                cir.setReturnValue(FakeItemRegister.getAEStack(monitor.extractItems(drop, mode, src)));
                 this.diveList((NetworkInventoryHandler<T>) (Object) this, mode);
                 work = true;
             }
