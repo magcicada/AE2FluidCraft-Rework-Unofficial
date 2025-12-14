@@ -9,6 +9,7 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
 import appeng.me.cache.SecurityCache;
 import appeng.me.storage.NetworkInventoryHandler;
+import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.interfaces.FCNetworkInventoryHandler;
 import com.glodblock.github.interfaces.FCNetworkMonitor;
@@ -73,7 +74,7 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
         var drop = Util.packAEStackToDrop(input);
         if (drop != null) {
             this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
-            cir.setReturnValue((T) monitor.injectItems(drop, mode, src));
+            cir.setReturnValue(FakeItemRegister.getStack(monitor.injectItems(drop, mode, src)));
             this.diveList((NetworkInventoryHandler<T>) (Object) this, mode);
         } else {
             return;
@@ -98,7 +99,7 @@ public abstract class MixinNetworkInventoryHandler<T extends IAEStack<T>> implem
             var drop = Util.packAEStackToDrop(request);
             if (drop != null) {
                 this.surface((NetworkInventoryHandler<T>) (Object) this, mode);
-                cir.setReturnValue((T) monitor.extractItems(drop, mode, src));
+                cir.setReturnValue(FakeItemRegister.getStack(monitor.extractItems(drop, mode, src)));
                 this.diveList((NetworkInventoryHandler<T>) (Object) this, mode);
                 work = true;
             }
