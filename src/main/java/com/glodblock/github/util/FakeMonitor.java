@@ -14,7 +14,6 @@ import appeng.me.cache.GridStorageCache;
 import appeng.me.cache.NetworkMonitor;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectLists;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -44,17 +43,6 @@ public abstract class FakeMonitor<T extends IAEStack<T>> implements IMEMonitor<I
         final FakeMonitorSource fakeSource = FakeMonitorSource.release(source);
         final T s = monitor.injectItems(i, actionable, fakeSource);
         fakeSource.recycle();
-        if (actionable == Actionable.MODULATE) {
-            storage.postAlterationOfStoredItems(
-                channel,
-                ObjectLists.singleton(
-                    stack.copy().setStackSize(
-                        stack.getStackSize() - (s == null ? 0 : s.getStackSize())
-                    )
-                ),
-                source
-            );
-        }
         if (s == null) {
             return null;
         } else {
@@ -72,19 +60,7 @@ public abstract class FakeMonitor<T extends IAEStack<T>> implements IMEMonitor<I
         if (s == null) {
             return null;
         } else {
-            final var o = FakeItemRegister.packAEStackLong(s, stack.getItem());
-            if (actionable == Actionable.MODULATE && o != null) {
-                storage.postAlterationOfStoredItems(
-                    channel,
-                    ObjectLists.singleton(
-                        stack.copy().setStackSize(
-                            -o.getStackSize()
-                        )
-                    ),
-                    source
-                );
-            }
-            return o;
+            return FakeItemRegister.packAEStackLong(s, stack.getItem());
         }
     }
 

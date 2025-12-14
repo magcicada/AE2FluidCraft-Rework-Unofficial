@@ -5,6 +5,7 @@ import appeng.api.networking.security.IActionSource;
 import appeng.api.storage.IStorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
+import appeng.api.storage.data.IItemList;
 import appeng.me.cache.GridStorageCache;
 import appeng.me.cache.NetworkMonitor;
 import appeng.me.storage.NetworkInventoryHandler;
@@ -46,10 +47,26 @@ public abstract class MixinGridStorageCache {
         if (chan == Util.getFluidChannel() || (ModAndClassUtil.GAS && chan == Util.getGasChannel())) {
             final var list = new ObjectArrayList<IAEItemStack>();
             for (final IAEStack<?> i : input) {
-                final var drop = Util.packAEStackToDrop(i);
-                if (drop != null) list.add(drop);
+                final var size = i.getStackSize();
+                final var drop = Util.packAEStackToDrop(size > 0 ? i : i.setStackSize(-size));
+                if (drop != null) list.add(drop.setStackSize(size));
+                i.setStackSize(size);
             }
             ((FCNetworkMonitor) this.storageMonitors.get(Util.getItemChannel())).fc$postChange(true, list, src);
+        }
+    }
+
+    @Inject(method = "postChangesToNetwork", at = @At("TAIL"))
+    private <T extends IAEStack<T>, C extends IStorageChannel<T>> void postChangesToNetwork(final C chan, final int upOrDown, final IItemList<T> availableItems, final IActionSource src, final CallbackInfo ci) {
+        if (chan == Util.getFluidChannel() || (ModAndClassUtil.GAS && chan == Util.getGasChannel())) {
+            final var list = new ObjectArrayList<IAEItemStack>();
+            for (final IAEStack<?> i : availableItems) {
+                final var size = i.getStackSize();
+                final var drop = Util.packAEStackToDrop(size > 0 ? i : i.setStackSize(-size));
+                if (drop != null) list.add(drop.setStackSize(size));
+                i.setStackSize(size);
+            }
+            ((FCNetworkMonitor) this.storageMonitors.get(Util.getItemChannel())).fc$postChange(upOrDown > 0, list, src);
         }
     }
 }
