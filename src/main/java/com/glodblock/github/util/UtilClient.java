@@ -5,12 +5,12 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.client.me.SlotME;
 import appeng.helpers.InventoryAction;
 import appeng.util.Platform;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.item.ItemGasPacket;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.coremod.mixin.jei.AccessorGhostIngredientDragManager;
 import com.glodblock.github.coremod.mixin.jei.AccessorIngredientListOverlay;
 import com.glodblock.github.coremod.mixin.jei.AccessorInputHandler;
+import com.glodblock.github.integration.mek.FCGasItems;
+import com.glodblock.github.loader.FCItems;
 import com.mekeng.github.common.me.data.IAEGasStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
@@ -147,41 +147,46 @@ public final class UtilClient {
     }
 
     public static boolean rendererFluid(GuiContainer gui, IAEItemStack item, int mouseX, int mouseY, boolean isStorage) {
-        if (item == null || item.getItem() instanceof ItemFluidPacket) return false;
-        IAEFluidStack fluidStack = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
-        if (fluidStack != null) {
-            fluidStack.setStackSize(item.getStackSize());
-            String formattedAmount = GuiScreen.isShiftKeyDown() ? NumberFormat.getNumberInstance(Locale.US).format(fluidStack.getStackSize()) + " mB" : NumberFormat.getNumberInstance(Locale.US).format((double) fluidStack.getStackSize() / (double) 1000.0F) + " B";
-            String modName = TextFormatting.BLUE.toString() + TextFormatting.ITALIC + Loader.instance().getIndexedModList().get(Platform.getModId(fluidStack)).getName();
-            List<String> list = new ObjectArrayList<>();
-            list.add(fluidStack.getFluidStack().getLocalizedName());
-            list.add(modName);
-            if (isStorage)
-                list.add(TextFormatting.DARK_GRAY + I18n.format("gui.appliedenergistics2.StoredFluids") + " ： " + formattedAmount);
-            if (item.isCraftable())
-                list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
-            gui.drawHoveringText(list, mouseX, mouseY);
-            return true;
+        if (item == null) return false;
+        if (item.getItem() == FCItems.FLUID_DROP) {
+            IAEFluidStack fluidStack = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
+            if (fluidStack != null) {
+                fluidStack.setStackSize(item.getStackSize());
+                String formattedAmount = GuiScreen.isShiftKeyDown() ? NumberFormat.getNumberInstance(Locale.US).format(fluidStack.getStackSize()) + " mB" : NumberFormat.getNumberInstance(Locale.US).format((double) fluidStack.getStackSize() / (double) 1000.0F) + " B";
+                String modName = TextFormatting.BLUE.toString() + TextFormatting.ITALIC + Loader.instance().getIndexedModList().get(Platform.getModId(fluidStack)).getName();
+                List<String> list = new ObjectArrayList<>();
+                list.add(fluidStack.getFluidStack().getLocalizedName());
+                list.add(modName);
+                if (isStorage)
+                    list.add(TextFormatting.DARK_GRAY + I18n.format("gui.appliedenergistics2.StoredFluids") + " ： " + formattedAmount);
+                if (item.isCraftable())
+                    list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
+                gui.drawHoveringText(list, mouseX, mouseY);
+                return true;
+            }
         }
         return false;
     }
 
     @Optional.Method(modid = "mekeng")
     public static boolean rendererGas(GuiContainer gui, IAEItemStack item, int mouseX, int mouseY, boolean isStorage) {
-        if (item == null || item.getItem() instanceof ItemGasPacket) return false;
-        IAEGasStack gs = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
-        if (gs != null) {
-            gs.setStackSize(item.getStackSize());
-            String formattedAmount = GuiScreen.isShiftKeyDown() ? NumberFormat.getNumberInstance(Locale.US).format(gs.getStackSize()) + " mB" : NumberFormat.getNumberInstance(Locale.US).format((double) gs.getStackSize() / (double) 1000.0F) + " B";
-            String modName = "" + TextFormatting.BLUE + TextFormatting.ITALIC + Loader.instance().getIndexedModList().get("mekanism").getName();
-            List<String> list = new ObjectArrayList<>();
-            list.add(gs.getGas().getLocalizedName());
-            list.add(modName);
-            if (isStorage) list.add(TextFormatting.DARK_GRAY + I18n.format("tooltip.stored") + " ： " + formattedAmount);
-            if (item.isCraftable())
-                list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
-            gui.drawHoveringText(list, mouseX, mouseY);
-            return true;
+        if (item == null) return false;
+        if (item.getItem() == FCGasItems.GAS_DROP) {
+            IAEGasStack gs = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
+            if (gs != null) {
+                gs.setStackSize(item.getStackSize());
+                String formattedAmount = GuiScreen.isShiftKeyDown() ? NumberFormat.getNumberInstance(Locale.US).format(gs.getStackSize()) + " mB" : NumberFormat.getNumberInstance(Locale.US).format((double) gs.getStackSize() / (double) 1000.0F) + " B";
+                String modName = "" + TextFormatting.BLUE + TextFormatting.ITALIC + Loader.instance().getIndexedModList().get("mekanism").getName();
+                List<String> list = new ObjectArrayList<>();
+                list.add(gs.getGas().getLocalizedName());
+                list.add(modName);
+                if (isStorage)
+                    list.add(TextFormatting.DARK_GRAY + I18n.format("tooltip.stored") + " ： " + formattedAmount);
+                if (item.isCraftable())
+                    list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
+                gui.drawHoveringText(list, mouseX, mouseY);
+                return true;
+            }
         }
         return false;
     }
