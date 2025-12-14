@@ -50,12 +50,11 @@ public class TileFluidPatternEncoder extends AEBaseTile implements IAEAppEngInve
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return (T)patternInv;
+            return (T) patternInv;
         } else {
             return null;
         }

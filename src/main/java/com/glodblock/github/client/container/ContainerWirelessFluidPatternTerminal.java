@@ -23,7 +23,6 @@ import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.item.ItemLargeEncodedPattern;
 import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
-import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.integration.mek.FakeGases;
 import com.glodblock.github.interfaces.FCFluidPatternContainer;
 import com.glodblock.github.loader.FCItems;
@@ -33,7 +32,7 @@ import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import mekanism.api.gas.GasStack;
-import mekanism.common.capabilities.Capabilities;
+import mekanism.api.gas.IGasItem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
@@ -88,58 +87,17 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
         }
     }
 
-    public void encodeFluidCraftPattern() {
-        ItemStack output = this.patternSlotOUT.getStack();
-
-        final ItemStack[] in = this.getInputs();
-        final ItemStack[] out = this.getOutputs();
-        if (in == null || out == null) {
-            return;
+    private static boolean isPattern(final ItemStack output) {
+        if (output.isEmpty()) {
+            return false;
         }
-
-        if (!output.isEmpty() && !isPattern(output)) {
-            return;
+        if (output.getItem() instanceof ItemFluidEncodedPattern
+            || output.getItem() instanceof ItemFluidCraftEncodedPattern
+            || output.getItem() instanceof ItemLargeEncodedPattern) {
+            return true;
         }
-        else if (output.isEmpty()) {
-            output = this.patternSlotIN.getStack();
-            if (output.isEmpty() || !isPattern(output)) {
-                return;
-            }
-            output.setCount(output.getCount() - 1);
-            if (output.getCount() == 0) {
-                this.patternSlotIN.putStack(ItemStack.EMPTY);
-            }
-            Optional<ItemStack> maybePattern = AEApi.instance().definitions().items().encodedPattern().maybeStack(1);
-            if (maybePattern.isPresent()) {
-                output = maybePattern.get();
-                this.patternSlotOUT.putStack(output);
-            }
-        }
-        final NBTTagCompound encodedValue = new NBTTagCompound();
-
-        final NBTTagList tagIn = new NBTTagList();
-        final NBTTagList tagOut = new NBTTagList();
-
-        for (final ItemStack i : in) {
-            tagIn.appendTag(this.createItemTag(i));
-        }
-
-        for (final ItemStack i : out) {
-            tagOut.appendTag(this.createItemTag(i));
-        }
-
-        encodedValue.setTag("in", tagIn);
-        encodedValue.setTag("out", tagOut);
-        encodedValue.setBoolean("crafting", this.isCraftingMode());
-        encodedValue.setBoolean("substitute", this.substitute);
-        ItemStack patternStack = new ItemStack(FCItems.DENSE_CRAFT_ENCODED_PATTERN);
-        patternStack.setTagCompound(encodedValue);
-        FluidCraftingPatternDetails details = FluidCraftingPatternDetails.GetFluidPattern(patternStack, getNetworkNode().getWorld());
-        if (details == null || !details.isNecessary()) {
-            encode();
-            return;
-        }
-        patternSlotOUT.putStack(patternStack);
+        final IDefinitions defs = AEApi.instance().definitions();
+        return defs.items().encodedPattern().isSameAs(output) || defs.materials().blankPattern().isSameAs(output);
     }
 
     private static IAEItemStack[] collectInventory(Slot[] slots) {
@@ -149,20 +107,6 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
             ItemStack stack = slot.getStack();
             if (stack.isEmpty()) {
                 continue;
-            }
-            if (FakeFluids.isFluidFakeItem(stack)) {
-                IAEItemStack dropStack = FakeFluids.packFluid2AEDrops((FluidStack) FakeItemRegister.getStack(stack));
-                if (dropStack != null) {
-                    acc.add(dropStack);
-                    continue;
-                }
-            }
-            if (ModAndClassUtil.GAS && FakeGases.isGasFakeItem(stack)) {
-                IAEItemStack dropStack = FakeGases.packGas2AEDrops((GasStack) FakeItemRegister.getStack(stack));
-                if (dropStack != null) {
-                    acc.add(dropStack);
-                    continue;
-                }
             }
             IAEItemStack aeStack = AEItemStack.fromItemStack(stack);
             if (aeStack == null) {
@@ -224,17 +168,57 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
         return hasFluid && !search; // search=true -> outputs were empty
     }
 
-    private static boolean isPattern(final ItemStack output) {
-        if (output.isEmpty()) {
-            return false;
+    public void encodeFluidCraftPattern() {
+        ItemStack output = this.patternSlotOUT.getStack();
+
+        final ItemStack[] in = this.getInputs();
+        final ItemStack[] out = this.getOutputs();
+        if (in == null || out == null) {
+            return;
         }
-        if (output.getItem() instanceof ItemFluidEncodedPattern
-                || output.getItem() instanceof ItemFluidCraftEncodedPattern
-                || output.getItem() instanceof ItemLargeEncodedPattern) {
-            return true;
+
+        if (!output.isEmpty() && !isPattern(output)) {
+            return;
+        } else if (output.isEmpty()) {
+            output = this.patternSlotIN.getStack();
+            if (output.isEmpty() || !isPattern(output)) {
+                return;
+            }
+            output.setCount(output.getCount() - 1);
+            if (output.getCount() == 0) {
+                this.patternSlotIN.putStack(ItemStack.EMPTY);
+            }
+            Optional<ItemStack> maybePattern = AEApi.instance().definitions().items().encodedPattern().maybeStack(1);
+            if (maybePattern.isPresent()) {
+                output = maybePattern.get();
+                this.patternSlotOUT.putStack(output);
+            }
         }
-        final IDefinitions defs = AEApi.instance().definitions();
-        return defs.items().encodedPattern().isSameAs(output) || defs.materials().blankPattern().isSameAs(output);
+        final NBTTagCompound encodedValue = new NBTTagCompound();
+
+        final NBTTagList tagIn = new NBTTagList();
+        final NBTTagList tagOut = new NBTTagList();
+
+        for (final ItemStack i : in) {
+            tagIn.appendTag(this.createItemTag(i));
+        }
+
+        for (final ItemStack i : out) {
+            tagOut.appendTag(this.createItemTag(i));
+        }
+
+        encodedValue.setTag("in", tagIn);
+        encodedValue.setTag("out", tagOut);
+        encodedValue.setBoolean("crafting", this.isCraftingMode());
+        encodedValue.setBoolean("substitute", this.substitute);
+        ItemStack patternStack = new ItemStack(FCItems.DENSE_CRAFT_ENCODED_PATTERN);
+        patternStack.setTagCompound(encodedValue);
+        FluidCraftingPatternDetails details = FluidCraftingPatternDetails.GetFluidPattern(patternStack, getNetworkNode().getWorld());
+        if (details == null || !details.isNecessary()) {
+            encode();
+            return;
+        }
+        patternSlotOUT.putStack(patternStack);
     }
 
     @Override
@@ -284,7 +268,7 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
         Slot slot = getSlot(slotId);
         ItemStack stack = player.inventory.getItemStack();
         if ((slot instanceof SlotFakeCraftingMatrix || slot instanceof SlotPatternOutputs) && !stack.isEmpty()
-                && stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null) && Util.getFluidFromItem(stack) != null) {
+            && stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null) && Util.getFluidFromItem(stack) != null) {
             FluidStack fluid = null;
             switch (action) {
                 case PICKUP_OR_SET_DOWN:
@@ -308,7 +292,7 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
             return;
         }
         if (ModAndClassUtil.GAS && (slot instanceof SlotFakeCraftingMatrix || slot instanceof SlotPatternOutputs) && !stack.isEmpty()
-                && stack.hasCapability(Capabilities.GAS_HANDLER_CAPABILITY, null) && Util.getGasFromItem(stack) != null) {
+            && stack.getItem() instanceof IGasItem && Util.getGasFromItem(stack) != null) {
             GasStack gas = null;
             switch (action) {
                 case PICKUP_OR_SET_DOWN:
@@ -331,21 +315,6 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
             }
             return;
         }
-        if (action == InventoryAction.SPLIT_OR_PLACE_SINGLE) {
-            if (stack.isEmpty() && !slot.getStack().isEmpty() && FakeFluids.isFluidFakeItem(slot.getStack())) {
-                FluidStack fluid = FakeItemRegister.getStack(slot.getStack());
-                if (fluid != null && fluid.amount - 1000 >= 1) {
-                    fluid.amount -= 1000;
-                    slot.putStack(FakeFluids.packFluid2Drops(fluid));
-                }
-            } else if (ModAndClassUtil.GAS && stack.isEmpty() && !slot.getStack().isEmpty() && FakeGases.isGasFakeItem(slot.getStack())) {
-                GasStack gas = FakeItemRegister.getStack(slot.getStack());
-                if (gas != null && gas.amount - 1000 >= 1) {
-                    gas.amount -= 1000;
-                    slot.putStack(FakeGases.packGas2Drops(gas));
-                }
-            }
-        }
         super.doAction(player, action, slotId, id);
     }
 
@@ -356,21 +325,16 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
             if (!is.isEmpty() && (is.getItem() instanceof ItemFluidEncodedPattern || is.getItem() instanceof ItemFluidCraftEncodedPattern || is.getItem() instanceof ItemLargeEncodedPattern)) {
                 final ItemEncodedPattern pattern = (ItemEncodedPattern) is.getItem();
                 final ICraftingPatternDetails details = pattern.getPatternForItem(is, this.getPlayerInv().player.world);
-                if( details != null )
-                {
-                    this.setCraftingMode( details.isCraftable() );
-                    this.setSubstitute( details.canSubstitute() );
+                if (details != null) {
+                    this.setCraftingMode(details.isCraftable());
+                    this.setSubstitute(details.canSubstitute());
 
-                    for( int x = 0; x < this.crafting.getSlots(); x ++ ) {
-                        ((AppEngInternalInventory) this.crafting).setStackInSlot(x, ItemStack.EMPTY);
-                    }
+                    Util.clearItemInventory((AppEngInternalInventory) this.crafting);
+                    Util.clearItemInventory(this.output);
 
-                    for( int x = 0; x < this.output.getSlots(); x ++ ) {
-                        this.output.setStackInSlot(x, ItemStack.EMPTY);
-                    }
                     if (details instanceof FluidCraftingPatternDetails) {
                         putPattern(((FluidCraftingPatternDetails) details).getOriginInputs(), details.getOutputs());
-                        this.setCraftingMode( true );
+                        this.setCraftingMode(true);
                     } else {
                         putPattern(details.getInputs(), details.getOutputs());
                     }
@@ -383,28 +347,14 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
     }
 
     public void putPattern(IAEItemStack[] inputs, IAEItemStack[] outputs) {
-        for( int x = 0; x < this.getInventoryByName("crafting").getSlots() && x < inputs.length; x++ )
-        {
+        for (int x = 0; x < this.getInventoryByName("crafting").getSlots() && x < inputs.length; x++) {
             final IAEItemStack item = inputs[x];
-            if (item != null && item.getItem() == FCItems.FLUID_DROP) {
-                ItemStack packet = FakeFluids.packFluid2Drops(FakeItemRegister.getStack(item.createItemStack()));
-                ((AppEngInternalInventory) this.getInventoryByName("crafting")).setStackInSlot(x, packet);
-            } else if (ModAndClassUtil.GAS && item != null && item.getItem() == FCGasItems.GAS_DROP) {
-                ItemStack packet = FakeGases.packGas2Drops(FakeItemRegister.getStack(item.createItemStack()));
-                ((AppEngInternalInventory) this.getInventoryByName("crafting")).setStackInSlot(x, packet);
-            } else ((AppEngInternalInventory) this.getInventoryByName("crafting")).setStackInSlot( x, item == null ? ItemStack.EMPTY : item.createItemStack() );
+            ((AppEngInternalInventory) this.getInventoryByName("crafting")).setStackInSlot(x, item == null ? ItemStack.EMPTY : item.createItemStack());
         }
 
-        for( int x = 0; x < this.getInventoryByName("output").getSlots() && x < outputs.length; x++ )
-        {
+        for (int x = 0; x < this.getInventoryByName("output").getSlots() && x < outputs.length; x++) {
             final IAEItemStack item = outputs[x];
-            if (item != null && item.getItem() == FCItems.FLUID_DROP) {
-                ItemStack packet = FakeFluids.packFluid2Drops(FakeItemRegister.getStack(item.createItemStack()));
-                ((AppEngInternalInventory) this.getInventoryByName("output")).setStackInSlot(x, packet);
-            } else if (ModAndClassUtil.GAS && item != null && item.getItem() == FCGasItems.GAS_DROP) {
-                ItemStack packet = FakeGases.packGas2Drops(FakeItemRegister.getStack(item.createItemStack()));
-                ((AppEngInternalInventory) this.getInventoryByName("output")).setStackInSlot(x, packet);
-            } else ((AppEngInternalInventory) this.getInventoryByName("output")).setStackInSlot( x, item == null ? ItemStack.EMPTY : item.createItemStack() );
+            ((AppEngInternalInventory) this.getInventoryByName("output")).setStackInSlot(x, item == null ? ItemStack.EMPTY : item.createItemStack());
         }
     }
 
@@ -486,7 +436,7 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
     @Override
     public void acceptPattern(Int2ObjectMap<ItemStack[]> inputs, List<ItemStack> outputs, boolean combine) {
         IItemList<IAEItemStack> storageList = this.wirelessTerminalGUIObject.getInventory(Util.getItemChannel()) == null ?
-                null : this.wirelessTerminalGUIObject.getInventory(Util.getItemChannel()).getStorageList();
+            null : this.wirelessTerminalGUIObject.getInventory(Util.getItemChannel()).getStorageList();
         if (this.crafting instanceof AppEngInternalInventory && this.output != null) {
             Util.clearItemInventory((IItemHandlerModifiable) this.crafting);
             Util.clearItemInventory(this.output);

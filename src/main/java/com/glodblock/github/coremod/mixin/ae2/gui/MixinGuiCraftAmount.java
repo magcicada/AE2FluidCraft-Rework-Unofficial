@@ -27,7 +27,7 @@ public abstract class MixinGuiCraftAmount extends AEBaseGui {
 
     @Intrinsic
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
-        Slot slot = this.hoveredSlot;
+        Slot slot = this.getSlotUnderMouse();
         if (UtilClient.getMouseItem().isEmpty() && slot != null) {
             if (slot.getHasStack()) {
                 var item = slot.getStack();

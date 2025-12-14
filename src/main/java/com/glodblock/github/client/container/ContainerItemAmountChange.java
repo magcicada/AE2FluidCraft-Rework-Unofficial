@@ -16,29 +16,25 @@ public class ContainerItemAmountChange extends AEBaseContainer {
     @GuiSync(11)
     public int valueIndex;
 
-    public ContainerItemAmountChange(final InventoryPlayer ip, final ITerminalHost te )
-    {
-        super( ip, te );
-        this.patternValue = new SlotInaccessible( new AppEngInternalInventory( null, 1 ), 0, 34, 53 );
-        this.addSlotToContainer( patternValue );
+    public ContainerItemAmountChange(final InventoryPlayer ip, final ITerminalHost te) {
+        super(ip, te);
+        this.patternValue = new SlotInaccessible(new AppEngInternalInventory(null, 1), 0, 34, 53);
+        this.addSlotToContainer(patternValue);
     }
 
-    public Slot getPatternValue()
-    {
+    public Slot getPatternValue() {
         return patternValue;
     }
 
-    public int getValueIndex()
-    {
+    public int getValueIndex() {
         return valueIndex;
     }
 
-    public void setValueIndex( int valueIndex )
-    {
+    public void setValueIndex(int valueIndex) {
         this.valueIndex = valueIndex;
     }
 
-    public void setInitValue( long value ) {
+    public void setInitValue(long value) {
         this.initValue = value;
     }
 

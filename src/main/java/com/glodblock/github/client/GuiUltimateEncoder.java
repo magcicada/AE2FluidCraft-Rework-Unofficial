@@ -5,7 +5,6 @@ import appeng.api.config.Settings;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.GuiImgButton;
-import appeng.client.render.StackSizeRenderer;
 import appeng.container.interfaces.IJEIGhostIngredients;
 import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.SlotFake;
@@ -15,17 +14,11 @@ import appeng.util.item.AEItemStack;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.button.GuiFCImgButton;
 import com.glodblock.github.client.container.ContainerUltimateEncoder;
-import com.glodblock.github.client.render.FluidRenderUtils;
-import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.tile.TileUltimateEncoder;
 import com.glodblock.github.integration.jei.FluidPacketTarget;
 import com.glodblock.github.integration.jei.ItemTarget;
-import com.glodblock.github.integration.mek.FakeGases;
-import com.glodblock.github.integration.mek.GasRenderUtil;
-import com.glodblock.github.inventory.slot.SlotSingleItem;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.network.CPacketInventoryAction;
-import com.glodblock.github.util.Ae2ReflectClient;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.UtilClient;
@@ -51,7 +44,6 @@ public class GuiUltimateEncoder extends AEBaseGui implements IJEIGhostIngredient
 
     private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/ultimate_encoder.png");
     private final ContainerUltimateEncoder container;
-    private final StackSizeRenderer stackSizeRenderer = Ae2ReflectClient.getStackSizeRenderer(this);
     public final Map<IGhostIngredientHandler.Target<?>, Object> mapTargetSlot = new HashMap<>();
     private GuiImgButton encodeBtn;
     private GuiImgButton clearBtn;
@@ -106,19 +98,19 @@ public class GuiUltimateEncoder extends AEBaseGui implements IJEIGhostIngredient
         this.minusOneBtn.setHalfSize(true);
         this.buttonList.add(this.minusOneBtn);
 
-        this.combineEnableBtn = new GuiFCImgButton( this.guiLeft + 120, this.guiTop + 136, "FORCE_COMBINE", "DO_COMBINE" );
+        this.combineEnableBtn = new GuiFCImgButton(this.guiLeft + 120, this.guiTop + 136, "FORCE_COMBINE", "DO_COMBINE");
         this.combineEnableBtn.setHalfSize(true);
         this.buttonList.add(this.combineEnableBtn);
 
-        this.combineDisableBtn = new GuiFCImgButton( this.guiLeft + 120, this.guiTop + 136, "NOT_COMBINE", "DONT_COMBINE" );
+        this.combineDisableBtn = new GuiFCImgButton(this.guiLeft + 120, this.guiTop + 136, "NOT_COMBINE", "DONT_COMBINE");
         this.combineDisableBtn.setHalfSize(true);
         this.buttonList.add(this.combineDisableBtn);
 
-        this.fluidEnableBtn = new GuiFCImgButton( this.guiLeft + 120, this.guiTop + 118, "FLUID_FIRST", "FLUID" );
+        this.fluidEnableBtn = new GuiFCImgButton(this.guiLeft + 120, this.guiTop + 118, "FLUID_FIRST", "FLUID");
         this.fluidEnableBtn.setHalfSize(true);
         this.buttonList.add(this.fluidEnableBtn);
 
-        this.fluidDisableBtn = new GuiFCImgButton( this.guiLeft + 120, this.guiTop + 118, "ORIGIN_ORDER", "ITEM" );
+        this.fluidDisableBtn = new GuiFCImgButton(this.guiLeft + 120, this.guiTop + 118, "ORIGIN_ORDER", "ITEM");
         this.fluidDisableBtn.setHalfSize(true);
         this.buttonList.add(this.fluidDisableBtn);
     }
@@ -162,11 +154,11 @@ public class GuiUltimateEncoder extends AEBaseGui implements IJEIGhostIngredient
             }
 
             if (this.combineDisableBtn == btn || this.combineEnableBtn == btn) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns( "UltimateEncoder.Combine", this.combineDisableBtn == btn ? "1" : "0" ));
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("UltimateEncoder.Combine", this.combineDisableBtn == btn ? "1" : "0"));
             }
 
             if (this.fluidDisableBtn == btn || this.fluidEnableBtn == btn) {
-                FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns( "UltimateEncoder.Fluid", this.fluidDisableBtn == btn ? "1" : "0" ));
+                FluidCraft.proxy.netHandler.sendToServer(new CPacketFluidPatternTermBtns("UltimateEncoder.Fluid", this.fluidDisableBtn == btn ? "1" : "0"));
             }
             super.actionPerformed(btn);
         } catch (IOException ignore) {
@@ -176,12 +168,12 @@ public class GuiUltimateEncoder extends AEBaseGui implements IJEIGhostIngredient
 
     @Override
     protected void handleMouseClick(Slot slot, int slotIdx, int mouseButton, ClickType clickType) {
-        if (mouseButton == 2 ) {
+        if (mouseButton == 2) {
             if (slot instanceof OptionalSlotFake || slot instanceof SlotFakeCraftingMatrix) {
                 if (slot.getHasStack()) {
                     IAEItemStack stack = AEItemStack.fromItemStack(slot.getStack());
                     this.container.setTargetStack(stack);
-                    for (int i = 0; i < this.inventorySlots.inventorySlots.size(); i ++) {
+                    for (int i = 0; i < this.inventorySlots.inventorySlots.size(); i++) {
                         if (this.inventorySlots.inventorySlots.get(i).equals(slot)) {
                             FluidCraft.proxy.netHandler.sendToServer(new CPacketInventoryAction(CPacketInventoryAction.Action.CHANGE_AMOUNT, i, 0, stack));
                             break;
@@ -195,52 +187,21 @@ public class GuiUltimateEncoder extends AEBaseGui implements IJEIGhostIngredient
     }
 
     @Override
-    public void drawSlot(Slot slot) {
-        if (slot instanceof SlotFake) {
-            ItemStack stack = slot.getStack();
-            if (FluidRenderUtils.renderFluidPacketIntoGuiSlot(slot, stack, stackSizeRenderer, fontRenderer)) {
-                return;
-            }
-            if (ModAndClassUtil.GAS && GasRenderUtil.renderGasPacketIntoGuiSlot(slot, stack, stackSizeRenderer, fontRenderer)) {
-                return;
-            }
-            renderMEStyleSlot(slot, slot.getStack());
-        } else {
-            super.drawSlot(slot);
-        }
-    }
-
-    private void renderMEStyleSlot(Slot slot, @Nonnull ItemStack stack) {
-        if (slot instanceof SlotFake && !stack.isEmpty() && !(FakeFluids.isFluidFakeItem(stack) || (ModAndClassUtil.GAS && FakeGases.isGasFakeItem(stack)))) {
-            super.drawSlot(new SlotSingleItem(slot));
-            if (stack.getCount() > 1) {
-                this.stackSizeRenderer.renderStackSize(fontRenderer, AEItemStack.fromItemStack(stack), slot.xPos, slot.yPos);
-            }
-        }
-    }
-
-    @Override
     public void drawFG(int offsetX, int offsetY, int mouseX, int mouseY) {
         this.fontRenderer.drawString(getGuiDisplayName(I18n.format(NameConst.GUI_ULTIMATE_ENCODER)), 8, 6, 0x404040);
         this.fontRenderer.drawString(GuiText.inventory.getLocal(), 8, ySize - 94, 0x404040);
-        if ( this.container.combine )
-        {
+        if (this.container.combine) {
             this.combineEnableBtn.visible = true;
             this.combineDisableBtn.visible = false;
-        }
-        else
-        {
+        } else {
             this.combineEnableBtn.visible = false;
             this.combineDisableBtn.visible = true;
         }
 
-        if (this.container.fluidFirst)
-        {
+        if (this.container.fluidFirst) {
             this.fluidEnableBtn.visible = true;
             this.fluidDisableBtn.visible = false;
-        }
-        else
-        {
+        } else {
             this.fluidEnableBtn.visible = false;
             this.fluidDisableBtn.visible = true;
         }
@@ -285,7 +246,7 @@ public class GuiUltimateEncoder extends AEBaseGui implements IJEIGhostIngredient
 
     @Override
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
-        var slot = this.hoveredSlot;
+        var slot = this.getSlotUnderMouse();
         if (slot instanceof SlotFake s) {
             if (UtilClient.renderPatternSlotTip(this, mouseX, mouseY)) return;
             var i = AEItemStack.fromItemStack(s.getStack());

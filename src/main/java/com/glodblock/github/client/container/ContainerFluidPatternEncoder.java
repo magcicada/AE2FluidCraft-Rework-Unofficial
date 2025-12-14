@@ -9,7 +9,6 @@ import appeng.helpers.InventoryAction;
 import appeng.util.item.AEItemStack;
 import com.glodblock.github.common.item.ItemFluidEncodedPattern;
 import com.glodblock.github.common.item.fake.FakeFluids;
-import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.common.tile.TileFluidPatternEncoder;
 import com.glodblock.github.handler.AeItemStackHandler;
 import com.glodblock.github.integration.mek.FakeGases;
@@ -20,14 +19,12 @@ import com.glodblock.github.loader.FCItems;
 import com.glodblock.github.util.FluidPatternDetails;
 import com.glodblock.github.util.ModAndClassUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import mekanism.api.gas.GasStack;
 import mekanism.api.gas.GasTankInfo;
 import mekanism.common.capabilities.Capabilities;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -53,9 +50,9 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements Pat
             addSlotToContainer(new SlotFluidConvertingFake(output, y, 113, 17 + y * 18));
         }
         addSlotToContainer(new SlotRestrictedInput(
-                SlotRestrictedInput.PlacableItemType.BLANK_PATTERN, tile.getInventory(), 0, 138, 20, ipl));
+            SlotRestrictedInput.PlacableItemType.BLANK_PATTERN, tile.getInventory(), 0, 138, 20, ipl));
         addSlotToContainer(new SlotRestrictedInput(
-                SlotRestrictedInput.PlacableItemType.ENCODED_PATTERN, tile.getInventory(), 1, 138, 50, ipl));
+            SlotRestrictedInput.PlacableItemType.ENCODED_PATTERN, tile.getInventory(), 1, 138, 50, ipl));
         bindPlayerInventory(ipl, 0, 84);
     }
 
@@ -86,7 +83,7 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements Pat
 
     private static boolean isNotPattern(ItemStack stack) {
         return stack.isEmpty() || !(AEApi.instance().definitions().materials().blankPattern().isSameAs(stack)
-                || (stack.getItem() instanceof ItemFluidEncodedPattern));
+            || (stack.getItem() instanceof ItemFluidEncodedPattern));
     }
 
     public void encodePattern() {
@@ -109,20 +106,6 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements Pat
         List<IAEItemStack> acc = new ArrayList<>();
         for (IAEItemStack stack : inv) {
             if (stack != null) {
-                if (FakeFluids.isFluidFakeItem(stack.getDefinition())) {
-                    IAEItemStack dropStack = FakeFluids.packFluid2AEDrops((FluidStack) FakeItemRegister.getStack(stack));
-                    if (dropStack != null) {
-                        acc.add(dropStack);
-                        continue;
-                    }
-                }
-                if (ModAndClassUtil.GAS && FakeGases.isGasFakeItem(stack.getDefinition())) {
-                    IAEItemStack dropStack = FakeGases.packGas2AEDrops((GasStack) FakeItemRegister.getStack(stack));
-                    if (dropStack != null) {
-                        acc.add(dropStack);
-                        continue;
-                    }
-                }
                 acc.add(stack);
             }
         }
@@ -140,12 +123,12 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements Pat
                     if (stack.isEmpty()) {
                         slot.putStack(ItemStack.EMPTY);
                     } else {
-                        ((SlotFluidConvertingFake)slot).putConvertedStack(stack.copy());
+                        ((SlotFluidConvertingFake) slot).putConvertedStack(stack.copy());
                     }
                     break;
                 case PLACE_SINGLE:
                     if (!stack.isEmpty()) {
-                        ((SlotFluidConvertingFake)slot).putConvertedStack(ItemHandlerHelper.copyStackWithSize(stack, 1));
+                        ((SlotFluidConvertingFake) slot).putConvertedStack(ItemHandlerHelper.copyStackWithSize(stack, 1));
                     }
                     break;
                 case SPLIT_OR_PLACE_SINGLE:
@@ -155,12 +138,12 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements Pat
                             slot.putStack(ItemHandlerHelper.copyStackWithSize(inSlot, Math.max(1, inSlot.getCount() - 1)));
                         } else if (stack.isItemEqual(inSlot)) {
                             slot.putStack(ItemHandlerHelper.copyStackWithSize(inSlot,
-                                    Math.min(inSlot.getMaxStackSize(), inSlot.getCount() + 1)));
+                                Math.min(inSlot.getMaxStackSize(), inSlot.getCount() + 1)));
                         } else {
-                            ((SlotFluidConvertingFake)slot).putConvertedStack(ItemHandlerHelper.copyStackWithSize(stack, 1));
+                            ((SlotFluidConvertingFake) slot).putConvertedStack(ItemHandlerHelper.copyStackWithSize(stack, 1));
                         }
                     } else if (!stack.isEmpty()) {
-                        ((SlotFluidConvertingFake)slot).putConvertedStack(ItemHandlerHelper.copyStackWithSize(stack, 1));
+                        ((SlotFluidConvertingFake) slot).putConvertedStack(ItemHandlerHelper.copyStackWithSize(stack, 1));
                     }
                     break;
             }
@@ -180,7 +163,7 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements Pat
             }
         }
         int bound = Math.min(outputSlot.getSlotCount(), outputs.size());
-        for (int index = 0; index < bound; index ++) {
+        for (int index = 0; index < bound; index++) {
             outputSlot.setStack(index, AEItemStack.fromItemStack(outputs.get(index)));
         }
     }
@@ -210,8 +193,8 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements Pat
                 return;
             } else if (stack.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null)) {
                 IFluidTankProperties[] tanks = Objects.requireNonNull(
-                        stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null))
-                        .getTankProperties();
+                                                          stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null))
+                                                      .getTankProperties();
                 for (IFluidTankProperties tank : tanks) {
                     IAEItemStack aeStack = FakeFluids.packFluid2AEDrops(tank.getContents());
                     if (aeStack != null) {
@@ -221,8 +204,8 @@ public class ContainerFluidPatternEncoder extends AEBaseContainer implements Pat
                 }
             } else if (ModAndClassUtil.GAS && stack.hasCapability(Capabilities.GAS_HANDLER_CAPABILITY, null)) {
                 GasTankInfo[] tanks = Objects.requireNonNull(
-                        stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null))
-                        .getTankInfo();
+                                                 stack.getCapability(Capabilities.GAS_HANDLER_CAPABILITY, null))
+                                             .getTankInfo();
                 for (GasTankInfo tank : tanks) {
                     IAEItemStack aeStack = FakeGases.packGas2AEDrops(tank.getGas());
                     if (aeStack != null) {

@@ -18,6 +18,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 import javax.annotation.Nonnull;
 
+@SuppressWarnings("deprecation")
 public class FCItems {
 
     public static final CreativeTabs TAB_AE2FC = new CreativeTabs(FluidCraft.MODID) {

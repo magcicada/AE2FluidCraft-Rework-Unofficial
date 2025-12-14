@@ -34,7 +34,7 @@ public abstract class MixinGuiMEMonitorable extends AEBaseMEGui {
 
     @Intrinsic
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
-        Slot slot = this.hoveredSlot;
+        Slot slot = this.getSlotUnderMouse();
         if (slot instanceof SlotME s && s.isEnabled()) {
             if (UtilClient.getMouseItem().isEmpty()) {
                 var item = s.getAEStack();

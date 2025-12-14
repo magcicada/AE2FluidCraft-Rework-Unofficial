@@ -4,7 +4,6 @@ import appeng.api.storage.ITerminalHost;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.implementations.GuiPatternTerm;
 import appeng.client.gui.widgets.GuiTabButton;
-import appeng.client.render.StackSizeRenderer;
 import appeng.container.AEBaseContainer;
 import appeng.container.slot.OptionalSlotFake;
 import appeng.container.slot.SlotFake;
@@ -13,13 +12,9 @@ import appeng.util.item.AEItemStack;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.button.GuiFCImgButton;
 import com.glodblock.github.client.container.ContainerFluidPatternTerminal;
-import com.glodblock.github.client.render.FluidRenderUtils;
-import com.glodblock.github.common.item.ItemFluidPacket;
 import com.glodblock.github.integration.jei.FluidPacketTarget;
-import com.glodblock.github.integration.mek.GasRenderUtil;
 import com.glodblock.github.inventory.GuiType;
 import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.inventory.slot.SlotSingleItem;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.util.Ae2ReflectClient;
@@ -30,15 +25,12 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GuiFluidPatternTerminal extends GuiPatternTerm {
 
-    private final StackSizeRenderer stackSizeRenderer = Ae2ReflectClient.getStackSizeRenderer(this);
     private final ContainerFluidPatternTerminal container;
     private GuiTabButton craftingStatusBtn;
     private GuiFCImgButton craftingFluidBtn;
@@ -107,31 +99,6 @@ public class GuiFluidPatternTerminal extends GuiPatternTerm {
     }
 
     @Override
-    public void drawSlot(Slot slot) {
-        if (slot instanceof SlotFake) {
-            ItemStack stack = slot.getStack();
-            if (FluidRenderUtils.renderFluidPacketIntoGuiSlot(slot, stack, stackSizeRenderer, fontRenderer)) {
-                return;
-            }
-            if (ModAndClassUtil.GAS && GasRenderUtil.renderGasPacketIntoGuiSlot(slot, stack, stackSizeRenderer, fontRenderer)) {
-                return;
-            }
-            renderMEStyleSlot(slot, slot.getStack());
-        } else {
-            super.drawSlot(slot);
-        }
-    }
-
-    private void renderMEStyleSlot(Slot slot, @Nonnull ItemStack stack) {
-        if (slot instanceof SlotFake && !stack.isEmpty() && !(stack.getItem() instanceof ItemFluidPacket)) {
-            super.drawSlot(new SlotSingleItem(slot));
-            if (stack.getCount() > 1) {
-                this.stackSizeRenderer.renderStackSize(fontRenderer, AEItemStack.fromItemStack(stack), slot.xPos, slot.yPos);
-            }
-        }
-    }
-
-    @Override
     protected void actionPerformed(final GuiButton btn) {
         if (btn == craftingStatusBtn) {
             InventoryHandler.switchGui(GuiType.FLUID_PAT_TERM_CRAFTING_STATUS);
@@ -191,7 +158,7 @@ public class GuiFluidPatternTerminal extends GuiPatternTerm {
 
     @Override
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
-        var slot = this.hoveredSlot;
+        var slot = this.getSlotUnderMouse();
         if (!this.container.isCraftingMode() && slot instanceof SlotFake s) {
             if (UtilClient.renderPatternSlotTip(this, mouseX, mouseY)) return;
             var i = AEItemStack.fromItemStack(s.getStack());

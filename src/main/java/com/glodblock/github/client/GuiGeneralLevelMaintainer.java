@@ -62,7 +62,7 @@ public class GuiGeneralLevelMaintainer extends AEBaseGui implements IJEIGhostIng
 
     @Override
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
-        Slot slot = this.hoveredSlot;
+        Slot slot = this.getSlotUnderMouse();
         if (slot instanceof SlotFake s && s.isEnabled()) {
             if (UtilClient.getMouseItem().isEmpty()) {
                 var item = s.getStack();

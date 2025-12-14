@@ -195,6 +195,18 @@ public final class Util {
         }
     }
 
+    public static void putPattern(AbstractPartEncoder part, IAEItemStack[] inputs, IAEItemStack[] outputs) {
+        for (int x = 0; x < part.getInventoryByName("crafting").getSlots() && x < inputs.length; x++) {
+            final IAEItemStack item = inputs[x];
+            ((AppEngInternalInventory) part.getInventoryByName("crafting")).setStackInSlot(x, item == null ? ItemStack.EMPTY : item.createItemStack());
+        }
+
+        for (int x = 0; x < part.getInventoryByName("output").getSlots() && x < outputs.length; x++) {
+            final IAEItemStack item = outputs[x];
+            ((AppEngInternalInventory) part.getInventoryByName("output")).setStackInSlot(x, item == null ? ItemStack.EMPTY : item.createItemStack());
+        }
+    }
+
     public static ItemStack[] compress(ItemStack[] list) {
         List<ItemStack> comp = new LinkedList<>();
         for (ItemStack item : list) {

@@ -58,14 +58,7 @@ public class ClientProxy extends CommonProxy {
             }
             FluidStack fluid = FakeItemRegister.getStack(s);
             return fluid != null ? fluid.getFluid().getColor(fluid) : 0xFFFFFFFF;
-        }, FCItems.FLUID_DROP);
-        Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> {
-            if (i == 0) {
-                return 0xFFFFFFFF;
-            }
-            FluidStack fluid = FakeItemRegister.getStack(s);
-            return fluid != null ? fluid.getFluid().getColor(fluid) : 0xFFFFFFFF;
-        }, FCItems.FLUID_PACKET);
+        }, FCItems.FLUID_PACKET, FCItems.FLUID_DROP);
         if (ModAndClassUtil.GAS) {
             Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> {
                 if (i == 0) {
@@ -73,14 +66,7 @@ public class ClientProxy extends CommonProxy {
                 }
                 GasStack gas = FakeItemRegister.getStack(s);
                 return gas != null ? gas.getGas().getTint() | 0xFF000000 : 0xFFFFFFFF;
-            }, FCGasItems.GAS_DROP);
-            Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> {
-                if (i == 0) {
-                    return 0xFFFFFFFF;
-                }
-                GasStack gas = FakeItemRegister.getStack(s);
-                return gas != null ? gas.getGas().getTint() | 0xFF000000 : 0xFFFFFFFF;
-            }, FCGasItems.GAS_PACKET);
+            }, FCGasItems.GAS_DROP, FCGasItems.GAS_PACKET);
         }
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> AEColor.TRANSPARENT.getVariantByTintIndex(i), FCItems.PART_FLUID_PATTERN_TERMINAL);
         Minecraft.getMinecraft().getItemColors().registerItemColorHandler((s, i) -> AEColor.TRANSPARENT.getVariantByTintIndex(i), FCItems.PART_EXTENDED_FLUID_PATTERN_TERMINAL);
@@ -91,7 +77,7 @@ public class ClientProxy extends CommonProxy {
     }
 
     @Override
-    public void postInit(FMLPostInitializationEvent event){
+    public void postInit(FMLPostInitializationEvent event) {
         super.postInit(event);
     }
 

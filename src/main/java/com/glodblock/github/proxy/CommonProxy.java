@@ -96,15 +96,15 @@ public class CommonProxy {
         AEApi.instance().registries().wireless().registerWirelessHandler(FCItems.WIRELESS_FLUID_PATTERN_TERMINAL);
         IRecipe disassembleRecipe = ForgeRegistries.RECIPES.getValue(new ResourceLocation(AppEng.MOD_ID, "disassemble"));
         if (disassembleRecipe instanceof DisassembleRecipe) {
-            Ae2Reflect.getDisassemblyNonCellMap((DisassembleRecipe)disassembleRecipe).put(
-                    createItemDefn(FCItems.DENSE_ENCODED_PATTERN),
-                    AEApi.instance().definitions().materials().blankPattern());
-            Ae2Reflect.getDisassemblyNonCellMap((DisassembleRecipe)disassembleRecipe).put(
-                    createItemDefn(FCItems.DENSE_CRAFT_ENCODED_PATTERN),
-                    AEApi.instance().definitions().materials().blankPattern());
-            Ae2Reflect.getDisassemblyNonCellMap((DisassembleRecipe)disassembleRecipe).put(
-                    createItemDefn(FCItems.LARGE_ITEM_ENCODED_PATTERN),
-                    AEApi.instance().definitions().materials().blankPattern());
+            Ae2Reflect.getDisassemblyNonCellMap((DisassembleRecipe) disassembleRecipe).put(
+                createItemDefn(FCItems.DENSE_ENCODED_PATTERN),
+                AEApi.instance().definitions().materials().blankPattern());
+            Ae2Reflect.getDisassemblyNonCellMap((DisassembleRecipe) disassembleRecipe).put(
+                createItemDefn(FCItems.DENSE_CRAFT_ENCODED_PATTERN),
+                AEApi.instance().definitions().materials().blankPattern());
+            Ae2Reflect.getDisassemblyNonCellMap((DisassembleRecipe) disassembleRecipe).put(
+                createItemDefn(FCItems.LARGE_ITEM_ENCODED_PATTERN),
+                AEApi.instance().definitions().materials().blankPattern());
         }
     }
 

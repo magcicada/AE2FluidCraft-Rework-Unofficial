@@ -69,7 +69,6 @@ public class TileFluidPacketDecoder extends AENetworkTile implements IGridTickab
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
     @Override
     public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
@@ -88,7 +87,7 @@ public class TileFluidPacketDecoder extends AENetworkTile implements IGridTickab
 
     @Override
     @Nonnull
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @SuppressWarnings({"rawtypes"})
     public TickRateModulation tickingRequest(@Nonnull IGridNode node, int ticksSinceLastCall) {
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() == FCItems.FLUID_PACKET) {
@@ -122,7 +121,10 @@ public class TileFluidPacketDecoder extends AENetworkTile implements IGridTickab
             IEnergyGrid energyGrid = node.getGrid().getCache(IEnergyGrid.class);
             IMEMonitor gasGrid = node.getGrid().<IStorageGrid>getCache(IStorageGrid.class)
                     .getInventory(AEApi.instance().storage().getStorageChannel(IGasStorageChannel.class));
-            IAEStack remaining = Platform.poweredInsert(energyGrid, gasGrid, aeGas, ownActionSource);
+            IAEStack remaining = null;
+            if (aeGas != null) {
+                remaining = Platform.poweredInsert(energyGrid, gasGrid, aeGas, ownActionSource);
+            }
             if (remaining != null) {
                 if (remaining.getStackSize() == aeGas.getStackSize()) {
                     return TickRateModulation.SLOWER;

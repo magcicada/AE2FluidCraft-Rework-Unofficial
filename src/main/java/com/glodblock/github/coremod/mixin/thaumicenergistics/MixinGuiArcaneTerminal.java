@@ -39,7 +39,7 @@ public abstract class MixinGuiArcaneTerminal extends GuiAbstractTerminal<IAEItem
 
     @Intrinsic
     protected void renderHoveredToolTip(int mouseX, int mouseY) {
-        Slot slot = this.hoveredSlot;
+        Slot slot = this.getSlotUnderMouse();
         if (slot instanceof SlotME<?> s && s.isEnabled()) {
             if (UtilClient.getMouseItem().isEmpty()) {
                 var aItem = s.getAEStack();

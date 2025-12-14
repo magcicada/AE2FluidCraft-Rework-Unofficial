@@ -5,6 +5,8 @@ import appeng.api.storage.data.IAEItemStack;
 import appeng.client.me.SlotME;
 import appeng.helpers.InventoryAction;
 import appeng.util.Platform;
+import com.glodblock.github.common.item.ItemFluidPacket;
+import com.glodblock.github.common.item.ItemGasPacket;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.coremod.mixin.jei.AccessorGhostIngredientDragManager;
 import com.glodblock.github.coremod.mixin.jei.AccessorIngredientListOverlay;
@@ -145,7 +147,7 @@ public final class UtilClient {
     }
 
     public static boolean rendererFluid(GuiContainer gui, IAEItemStack item, int mouseX, int mouseY, boolean isStorage) {
-        if (item == null) return false;
+        if (item == null || item.getItem() instanceof ItemFluidPacket) return false;
         IAEFluidStack fluidStack = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
         if (fluidStack != null) {
             fluidStack.setStackSize(item.getStackSize());
@@ -166,7 +168,7 @@ public final class UtilClient {
 
     @Optional.Method(modid = "mekeng")
     public static boolean rendererGas(GuiContainer gui, IAEItemStack item, int mouseX, int mouseY, boolean isStorage) {
-        if (item == null) return false;
+        if (item == null || item.getItem() instanceof ItemGasPacket) return false;
         IAEGasStack gs = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
         if (gs != null) {
             gs.setStackSize(item.getStackSize());

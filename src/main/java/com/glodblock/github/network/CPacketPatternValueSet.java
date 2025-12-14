@@ -5,23 +5,15 @@ import appeng.container.slot.SlotFake;
 import appeng.core.sync.GuiBridge;
 import appeng.util.Platform;
 import com.glodblock.github.client.container.ContainerItemAmountChange;
-import com.glodblock.github.common.item.fake.FakeFluids;
-import com.glodblock.github.common.item.fake.FakeItemRegister;
-import com.glodblock.github.integration.mek.FCGasItems;
-import com.glodblock.github.integration.mek.FakeGases;
 import com.glodblock.github.interfaces.FCFluidPatternContainer;
 import com.glodblock.github.inventory.GuiType;
 import com.glodblock.github.inventory.InventoryHandler;
-import com.glodblock.github.loader.FCItems;
 import com.glodblock.github.util.Ae2Reflect;
-import com.glodblock.github.util.ModAndClassUtil;
 import io.netty.buffer.ByteBuf;
-import mekanism.api.gas.GasStack;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -90,22 +82,8 @@ public class CPacketPatternValueSet implements IMessage {
                             if (slot instanceof SlotFake) {
                                 if (slot.getHasStack()) {
                                     ItemStack stack = slot.getStack().copy();
-                                    if (stack.getItem() == FCItems.FLUID_PACKET) {
-                                        FluidStack fluidStack = FakeItemRegister.getStack(stack);
-                                        if (fluidStack != null) {
-                                            fluidStack.amount = message.amount;
-                                        }
-                                        slot.putStack(FakeFluids.packFluid2Packet(fluidStack));
-                                    } else if (ModAndClassUtil.GAS && stack.getItem() == FCGasItems.GAS_PACKET) {
-                                        GasStack gasStack = FakeItemRegister.getStack(stack);
-                                        if (gasStack != null) {
-                                            gasStack.amount = message.amount;
-                                        }
-                                        slot.putStack(FakeGases.packGas2Packet(gasStack));
-                                    } else {
-                                        stack.setCount(message.amount);
-                                        slot.putStack(stack);
-                                    }
+                                    stack.setCount(message.amount);
+                                    slot.putStack(stack);
                                 }
                             }
                         }

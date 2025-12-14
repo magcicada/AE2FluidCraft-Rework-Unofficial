@@ -11,14 +11,6 @@ import appeng.items.misc.ItemEncodedPattern;
 import appeng.tile.AEBaseInvTile;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.inv.InvOperation;
-import com.glodblock.github.common.item.ItemFluidDrop;
-import com.glodblock.github.common.item.ItemFluidPacket;
-import com.glodblock.github.common.item.fake.FakeFluids;
-import com.glodblock.github.common.item.fake.FakeItemRegister;
-import com.glodblock.github.integration.mek.FCGasItems;
-import com.glodblock.github.integration.mek.FakeGases;
-import com.glodblock.github.loader.FCItems;
-import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.item.ItemStack;
@@ -100,35 +92,18 @@ public class TileUltimateEncoder extends AEBaseInvTile implements ITerminalHost 
         if (slot == 1) {
             final ItemStack is = inv.getStackInSlot(1);
             if (!is.isEmpty()) {
-                if (is.getItem() instanceof ItemEncodedPattern) {
-                    final ItemEncodedPattern pattern = (ItemEncodedPattern) is.getItem();
-                    final ICraftingPatternDetails details = pattern.getPatternForItem(is, this.getWorld());
+                if (is.getItem() instanceof ItemEncodedPattern patterns) {
+                    final ICraftingPatternDetails details = patterns.getPatternForItem(is, this.getWorld());
                     if(details != null) {
                         Util.clearItemInventory(this.craft);
                         Util.clearItemInventory(this.output);
                         for(int x = 0; x < this.craft.getSlots() && x < details.getInputs().length; x++) {
                             final IAEItemStack item = details.getInputs()[x];
-                            if (item != null && item.getItem() == FCItems.FLUID_DROP) {
-                                ItemStack packet = FakeFluids.packFluid2Packet(FakeItemRegister.getStack(item.createItemStack()));
-                                this.craft.setStackInSlot(x, packet);
-                            } else if (ModAndClassUtil.GAS && item != null && item.getItem() == FCGasItems.GAS_DROP) {
-                                ItemStack packet = FakeGases.packGas2Packet(FakeItemRegister.getStack(item.createItemStack()));
-                                this.craft.setStackInSlot(x, packet);
-                            } else {
-                                this.craft.setStackInSlot(x, item == null ? ItemStack.EMPTY : item.createItemStack());
-                            }
+                            this.craft.setStackInSlot(x, item == null ? ItemStack.EMPTY : item.createItemStack());
                         }
                         for(int x = 0; x < this.output.getSlots() && x < details.getOutputs().length; x++) {
                             final IAEItemStack item = details.getOutputs()[x];
-                            if (item != null && item.getItem() == FCItems.FLUID_DROP) {
-                                ItemStack packet = FakeFluids.packFluid2Packet(FakeItemRegister.getStack(item.createItemStack()));
-                                this.output.setStackInSlot(x, packet);
-                            } else if (ModAndClassUtil.GAS && item != null && item.getItem() == FCGasItems.GAS_DROP) {
-                                ItemStack packet = FakeGases.packGas2Packet(FakeItemRegister.getStack(item.createItemStack()));
-                                this.output.setStackInSlot(x, packet);
-                            } else {
-                                this.output.setStackInSlot(x, item == null ? ItemStack.EMPTY : item.createItemStack());
-                            }
+                            this.output.setStackInSlot(x, item == null ? ItemStack.EMPTY : item.createItemStack());
                         }
                     }
                     this.markDirty();
