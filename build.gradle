@@ -197,6 +197,7 @@ dependencies {
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     }
 
+    compileOnly(rfg.deobf("curse.maven:modularmachinery-community-edition-817377:7306619"))
     implementation(rfg.deobf("curse.maven:had-enough-items-557549:4810661"))
     compileOnly(rfg.deobf('curse.maven:packagedauto-308380:2977147')) // 1.0.3.14
     compileOnly(rfg.deobf('curse.maven:codechicken-lib-1-8-242818:2779848')) //ccl
