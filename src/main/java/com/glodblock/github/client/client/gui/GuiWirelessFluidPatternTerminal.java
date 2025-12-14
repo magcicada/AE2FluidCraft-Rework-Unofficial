@@ -146,19 +146,15 @@ public class GuiWirelessFluidPatternTerminal extends GuiPatternTerm {
 
     @Override
     public List<IGhostIngredientHandler.Target<?>> getPhantomTargets(Object ingredient) {
-        if (!this.container.isCraftingMode() && (FluidPacketTarget.covertFluid(ingredient) != null || FluidPacketTarget.covertGas(ingredient) != null)) {
-            List<IGhostIngredientHandler.Target<?>> targets = new ArrayList<>();
-            for (Slot slot : this.inventorySlots.inventorySlots) {
-                if (slot instanceof SlotFake) {
-                    IGhostIngredientHandler.Target<?> target = new FluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
-                    targets.add(target);
-                    mapTargetSlot.putIfAbsent(target, slot);
-                }
+        List<IGhostIngredientHandler.Target<?>> targets = new ArrayList<>();
+        for (Slot slot : this.inventorySlots.inventorySlots) {
+            if (slot instanceof SlotFake) {
+                IGhostIngredientHandler.Target<?> target = new FluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
+                targets.add(target);
+                mapTargetSlot.putIfAbsent(target, slot);
             }
-            return targets;
-        } else {
-            return super.getPhantomTargets(ingredient);
         }
+        return targets;
     }
 
     @Override

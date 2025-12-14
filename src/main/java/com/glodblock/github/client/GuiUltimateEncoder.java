@@ -16,7 +16,6 @@ import com.glodblock.github.client.button.GuiFCImgButton;
 import com.glodblock.github.client.container.ContainerUltimateEncoder;
 import com.glodblock.github.common.tile.TileUltimateEncoder;
 import com.glodblock.github.integration.jei.FluidPacketTarget;
-import com.glodblock.github.integration.jei.ItemTarget;
 import com.glodblock.github.network.CPacketFluidPatternTermBtns;
 import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.util.ModAndClassUtil;
@@ -29,13 +28,10 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -215,28 +211,15 @@ public class GuiUltimateEncoder extends AEBaseGui implements IJEIGhostIngredient
 
     @Override
     public List<IGhostIngredientHandler.Target<?>> getPhantomTargets(Object ingredient) {
-        if (FluidPacketTarget.covertFluid(ingredient) != null || FluidPacketTarget.covertGas(ingredient) != null) {
-            List<IGhostIngredientHandler.Target<?>> targets = new ObjectArrayList<>();
-            for (Slot slot : this.container.inventorySlots) {
-                if (slot instanceof SlotFake) {
-                    IGhostIngredientHandler.Target<?> target = new FluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
-                    targets.add(target);
-                    this.mapTargetSlot.putIfAbsent(target, slot);
-                }
+        List<IGhostIngredientHandler.Target<?>> targets = new ObjectArrayList<>();
+        for (Slot slot : this.container.inventorySlots) {
+            if (slot instanceof SlotFake) {
+                IGhostIngredientHandler.Target<?> target = new FluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
+                targets.add(target);
+                this.mapTargetSlot.putIfAbsent(target, slot);
             }
-            return targets;
-        } else if (ingredient instanceof ItemStack) {
-            List<IGhostIngredientHandler.Target<?>> targets = new ArrayList<>();
-            for (Slot slot : this.container.inventorySlots) {
-                if (slot instanceof SlotFake) {
-                    IGhostIngredientHandler.Target<?> target = new ItemTarget(getGuiLeft(), getGuiTop(), slot);
-                    targets.add(target);
-                    this.mapTargetSlot.putIfAbsent(target, slot);
-                }
-            }
-            return targets;
         }
-        return Collections.emptyList();
+        return targets;
     }
 
     @Override

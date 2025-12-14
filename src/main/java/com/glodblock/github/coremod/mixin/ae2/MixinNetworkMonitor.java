@@ -1,6 +1,7 @@
 package com.glodblock.github.coremod.mixin.ae2;
 
 import appeng.api.config.FuzzyMode;
+import appeng.api.networking.security.IActionSource;
 import appeng.api.storage.IStorageChannel;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
@@ -28,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nonnull;
 
 @Mixin(value = NetworkMonitor.class, remap = false)
-public class MixinNetworkMonitor<T extends IAEStack<T>> implements FCNetworkMonitor {
+public abstract class MixinNetworkMonitor<T extends IAEStack<T>> implements FCNetworkMonitor<T> {
 
     @Shadow
     @Final
@@ -39,6 +40,9 @@ public class MixinNetworkMonitor<T extends IAEStack<T>> implements FCNetworkMoni
     @Final
     @Nonnull
     private GridStorageCache myGridCache;
+
+    @Shadow
+    protected abstract void postChange(boolean add, Iterable<T> changes, IActionSource src);
 
     @Unique
     private FakeMonitor<IAEFluidStack> fluidMonitor;
@@ -102,6 +106,11 @@ public class MixinNetworkMonitor<T extends IAEStack<T>> implements FCNetworkMoni
     @Override
     public FakeMonitor<?> getGasMonitor() {
         return gasMonitor;
+    }
+
+    @Override
+    public void fc$postChange(boolean add, Iterable<T> changes, IActionSource src) {
+        this.postChange(add, changes, src);
     }
 
     @Inject(method = "getAvailableItems", at = @At("TAIL"))

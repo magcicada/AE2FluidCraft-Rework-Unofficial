@@ -5,6 +5,7 @@ import appeng.container.slot.SlotFake;
 import appeng.core.sync.network.NetworkHandler;
 import appeng.core.sync.packets.PacketInventoryAction;
 import appeng.helpers.InventoryAction;
+import appeng.util.item.AEItemStack;
 import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.integration.mek.FakeGases;
 import com.glodblock.github.util.ModAndClassUtil;
@@ -14,16 +15,18 @@ import mezz.jei.api.gui.IGhostIngredientHandler;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import org.lwjgl.input.Mouse;
 
 import javax.annotation.Nonnull;
 import java.awt.Rectangle;
 import java.io.IOException;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class FluidPacketTarget implements IGhostIngredientHandler.Target<Object> {
 
     private final int left;
     private final int top;
-    protected final Slot slot;
+    private final Slot slot;
 
     public FluidPacketTarget(int guiLeft, int guiTop, Slot slot) {
         this.left = guiLeft;
@@ -39,20 +42,28 @@ public class FluidPacketTarget implements IGhostIngredientHandler.Target<Object>
 
     @Override
     public void accept(@Nonnull Object ingredient) {
-        final IAEItemStack packet;
-        FluidStack fluid = covertFluid(ingredient);
-        Object gas = covertGas(ingredient);
-        if (fluid != null || gas != null) {
-            if (fluid != null) {
-                packet = FakeFluids.packFluid2AEDrops(fluid);
-            } else {
-                packet = FakeGases.packGas2AEDrops((GasStack) gas);
+        IAEItemStack packet = null;
+        if (Mouse.getEventButton() == 0 || !(ingredient instanceof ItemStack)) {
+            final FluidStack fluid = covertFluid(ingredient);
+            final Object gas = covertGas(ingredient);
+            if (fluid != null || gas != null) {
+                if (fluid != null) {
+                    packet = FakeFluids.packFluid2AEDrops(fluid);
+                } else {
+                    packet = FakeGases.packGas2AEDrops((GasStack) gas);
+                }
             }
-        } else return;
+        }
+        if (ingredient instanceof ItemStack s) {
+            if (packet == null) {
+                if (s.isEmpty()) return;
+                packet = AEItemStack.fromItemStack(s);
+            }
+        }
 
+        if (packet == null) return;
         try {
-            PacketInventoryAction p = new PacketInventoryAction(InventoryAction.PLACE_JEI_GHOST_ITEM, (SlotFake) this.slot, packet);
-            NetworkHandler.instance().sendToServer(p);
+            NetworkHandler.instance().sendToServer(new PacketInventoryAction(InventoryAction.PLACE_JEI_GHOST_ITEM, (SlotFake) slot, packet));
         } catch (IOException ignored) {
 
         }

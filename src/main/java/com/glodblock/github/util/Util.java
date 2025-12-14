@@ -72,7 +72,7 @@ public final class Util {
         return new GasStackSizeRenderer();
     }
 
-    public static <T> IAEItemStack packAEStackToDrop(T s) {
+    public static IAEItemStack packAEStackToDrop(Object s) {
         if (s instanceof IAEFluidStack f) {
             return FakeFluids.packFluid2AEDrops(f);
         } else if (ModAndClassUtil.GAS && s instanceof IAEGasStack g) {

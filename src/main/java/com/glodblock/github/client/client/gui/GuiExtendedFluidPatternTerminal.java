@@ -20,13 +20,13 @@ import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.util.Ae2ReflectClient;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.UtilClient;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mezz.jei.api.gui.IGhostIngredientHandler.Target;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GuiExtendedFluidPatternTerminal extends GuiExpandedProcessingPatternTerm {
@@ -127,19 +127,15 @@ public class GuiExtendedFluidPatternTerminal extends GuiExpandedProcessingPatter
 
     @Override
     public List<Target<?>> getPhantomTargets(Object ingredient) {
-        if (FluidPacketTarget.covertFluid(ingredient) != null || FluidPacketTarget.covertGas(ingredient) != null) {
-            List<Target<?>> targets = new ArrayList<>();
-            for (Slot slot : this.inventorySlots.inventorySlots) {
-                if (slot instanceof SlotFake) {
-                    Target<?> target = new FluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
-                    targets.add(target);
-                    mapTargetSlot.putIfAbsent(target, slot);
-                }
+        List<Target<?>> targets = new ObjectArrayList<>();
+        for (Slot slot : this.inventorySlots.inventorySlots) {
+            if (slot instanceof SlotFake) {
+                Target<?> target = new FluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
+                targets.add(target);
+                mapTargetSlot.putIfAbsent(target, slot);
             }
-            return targets;
-        } else {
-            return super.getPhantomTargets(ingredient);
         }
+        return targets;
     }
 
     @Override

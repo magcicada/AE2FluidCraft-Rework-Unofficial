@@ -1,14 +1,10 @@
 package com.glodblock.github.client;
 
-import appeng.api.storage.data.IAEItemStack;
 import appeng.client.gui.AEBaseGui;
 import appeng.client.gui.widgets.GuiNumberBox;
 import appeng.container.interfaces.IJEIGhostIngredients;
 import appeng.container.slot.SlotFake;
 import appeng.core.localization.GuiText;
-import appeng.core.sync.network.NetworkHandler;
-import appeng.core.sync.packets.PacketInventoryAction;
-import appeng.helpers.InventoryAction;
 import appeng.util.item.AEItemStack;
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.container.ContainerGeneralLevelMaintainer;
@@ -22,19 +18,13 @@ import com.glodblock.github.util.NameConst;
 import com.glodblock.github.util.UtilClient;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import mekanism.api.gas.GasStack;
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.IItemHandler;
-import org.lwjgl.input.Mouse;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -200,17 +190,13 @@ public class GuiGeneralLevelMaintainer extends AEBaseGui implements IJEIGhostIng
     public List<IGhostIngredientHandler.Target<?>> getPhantomTargets(Object ingredient) {
         this.mapTargetSlot.clear();
         List<IGhostIngredientHandler.Target<?>> list = new ObjectArrayList<>();
-        if (ModAndClassUtil.GAS && mek$getPhantomTargets(ingredient, list)) return list;
-
-        if (ingredient instanceof ItemStack || ingredient instanceof FluidStack) {
-            if (!this.inventorySlots.inventorySlots.isEmpty()) {
-                for (Slot slots : this.inventorySlots.inventorySlots) {
-                    if (slots instanceof SlotFake slot) {
-                        final IGhostIngredientHandler.Target<Object> targetItem;
-                        targetItem = new ItemAndFluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
-                        list.add(targetItem);
-                        this.mapTargetSlot.putIfAbsent(targetItem, slot);
-                    }
+        if (!this.inventorySlots.inventorySlots.isEmpty()) {
+            for (Slot slots : this.inventorySlots.inventorySlots) {
+                if (slots instanceof SlotFake slot) {
+                    final IGhostIngredientHandler.Target<Object> targetItem
+                        = new FluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
+                    list.add(targetItem);
+                    this.mapTargetSlot.put(targetItem, slot);
                 }
             }
         }
@@ -222,57 +208,4 @@ public class GuiGeneralLevelMaintainer extends AEBaseGui implements IJEIGhostIng
         return mapTargetSlot;
     }
 
-    @Optional.Method(modid = "mekeng")
-    public boolean mek$getPhantomTargets(Object ingredient, List<IGhostIngredientHandler.Target<?>> list) {
-        if (ingredient instanceof GasStack) {
-            if (!this.inventorySlots.inventorySlots.isEmpty()) {
-                for (Slot slots : this.inventorySlots.inventorySlots) {
-                    if (slots instanceof SlotFake slot) {
-                        IGhostIngredientHandler.Target<Object> targetItem = new FluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
-                        list.add(targetItem);
-                        this.mapTargetSlot.putIfAbsent(targetItem, slot);
-                    }
-                }
-            }
-        }
-        return list.isEmpty();
-    }
-
-    private static class ItemAndFluidPacketTarget extends FluidPacketTarget {
-
-        public ItemAndFluidPacketTarget(int guiLeft, int guiTop, Slot slot) {
-            super(guiLeft, guiTop, slot);
-        }
-
-        @Override
-        public void accept(@Nonnull Object ingredient) {
-            if (ingredient instanceof ItemStack s) {
-                if (Mouse.getEventButton() == 0) {
-                    FluidStack fluid = covertFluid(ingredient);
-                    Object gas = covertGas(ingredient);
-                    if (fluid != null) {
-                        super.accept(fluid);
-                        return;
-                    }
-                    if (gas != null) {
-                        super.accept(gas);
-                        return;
-                    }
-                }
-                IAEItemStack stack = AEItemStack.fromItemStack(s);
-                if (stack == null) {
-                    return;
-                }
-                final PacketInventoryAction p;
-                try {
-                    p = new PacketInventoryAction(InventoryAction.PLACE_JEI_GHOST_ITEM, (SlotFake) slot, stack);
-                    NetworkHandler.instance().sendToServer(p);
-                } catch (IOException ignored) {
-
-                }
-                return;
-            }
-            super.accept(ingredient);
-        }
-    }
 }
