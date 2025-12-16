@@ -67,6 +67,10 @@ public class ContainerWirelessFluidPatternTerminal extends ContainerWirelessPatt
     @Override
     public void encode() {
         if (!checkHasFluidPattern()) {
+            if (this.isCraftingMode()
+                && this.patternSlotOUT.getStack().getItem() == FCItems.DENSE_ENCODED_PATTERN) {
+                this.patternSlotOUT.putStack(AEApi.instance().definitions().items().encodedPattern().maybeStack(this.patternSlotOUT.getStack().getCount()).orElse(ItemStack.EMPTY));
+            }
             super.encode();
             return;
         }
