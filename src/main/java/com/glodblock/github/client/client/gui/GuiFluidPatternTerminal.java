@@ -158,8 +158,8 @@ public class GuiFluidPatternTerminal extends GuiPatternTerm {
         if (!this.container.isCraftingMode() && slot instanceof final SlotFake s) {
             if (UtilClient.renderPatternSlotTip(this, mouseX, mouseY)) return;
             final var i = AEItemStack.fromItemStack(s.getStack());
-            if (UtilClient.rendererFluid(this, i, mouseX, mouseY, true)) return;
-            if (ModAndClassUtil.GAS && UtilClient.rendererGas(this, i, mouseX, mouseY, true)) return;
+            if (UtilClient.rendererFluid(this, i, mouseX, mouseY)) return;
+            if (ModAndClassUtil.GAS && UtilClient.rendererGas(this, i, mouseX, mouseY)) return;
         }
         super.renderHoveredToolTip(mouseX, mouseY);
     }

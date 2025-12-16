@@ -13,6 +13,7 @@
     "ae2.MixinGuiBridge",
     "ae2.MixinNetworkInventoryHandler",
     "ae2.MixinNetworkMonitor",
+    "ae2.container.MixinContainerCellWorkbench",
     "ae2.container.MixinContainerCraftConfirm",
     "ae2.container.MixinContainerInterfaceTerminal",
     "ae2.container.MixinContainerPatternEncoder",
@@ -25,6 +26,7 @@
   "server": [],
   "client": [
     "ae2.gui.MixinAEBaseGui",
+    "ae2.gui.MixinGuiCellWorkbench",
     "ae2.gui.MixinGuiCraftAmount",
     "ae2.gui.MixinGuiCrafting",
     "ae2.gui.MixinGuiCraftingStatus",

@@ -45,10 +45,10 @@ public abstract class MixinGuiArcaneTerminal extends GuiAbstractTerminal<IAEItem
                 final var aItem = s.getAEStack();
                 if (aItem instanceof final IAEItemStack item) {
                     if (item.getItem() == FCItems.FLUID_DROP) {
-                        if (UtilClient.rendererFluid(this, item, mouseX, mouseY, true)) return;
+                        if (UtilClient.rendererFluid(this, item, mouseX, mouseY)) return;
                     }
                     if (ModAndClassUtil.GAS && item.getItem() == FCGasItems.GAS_DROP) {
-                        if (UtilClient.rendererGas(this, item, mouseX, mouseY, true)) return;
+                        if (UtilClient.rendererGas(this, item, mouseX, mouseY)) return;
                     }
                 }
             } else if (UtilClient.renderContainerToolTip(this, mouseX, mouseY)) return;
@@ -58,7 +58,6 @@ public abstract class MixinGuiArcaneTerminal extends GuiAbstractTerminal<IAEItem
 
     @Inject(method = "handleMouseClick", at = @At("HEAD"), cancellable = true)
     private void fc$handleMouseClick(final Slot slot, final int slotId, final int mouseButton, final ClickType type, final CallbackInfo ci) {
-        final boolean success = false;
         if (slot instanceof final SlotME<?> s) {
             if (!UtilClient.getMouseItem().isEmpty()) {
                 if (mouseButton == 0) {

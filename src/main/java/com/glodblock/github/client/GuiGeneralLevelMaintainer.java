@@ -58,11 +58,11 @@ public class GuiGeneralLevelMaintainer extends AEBaseGui implements IJEIGhostIng
                 final var item = s.getStack();
                 if (!item.isEmpty()) {
                     if (item.getItem() == FCItems.FLUID_DROP) {
-                        if (UtilClient.rendererFluid(this, AEItemStack.fromItemStack(item), mouseX, mouseY, false))
+                        if (UtilClient.rendererFluid(this, AEItemStack.fromItemStack(item), mouseX, mouseY))
                             return;
                     }
                     if (ModAndClassUtil.GAS && item.getItem() == FCGasItems.GAS_DROP) {
-                        if (UtilClient.rendererGas(this, AEItemStack.fromItemStack(item), mouseX, mouseY, false))
+                        if (UtilClient.rendererGas(this, AEItemStack.fromItemStack(item), mouseX, mouseY))
                             return;
                     }
                 }

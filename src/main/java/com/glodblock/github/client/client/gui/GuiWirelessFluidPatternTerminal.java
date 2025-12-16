@@ -20,6 +20,7 @@ import com.glodblock.github.network.CPacketInventoryAction;
 import com.glodblock.github.util.Ae2ReflectClient;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.UtilClient;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import mezz.jei.api.gui.IGhostIngredientHandler;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
@@ -27,7 +28,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GuiWirelessFluidPatternTerminal extends GuiPatternTerm {
@@ -146,7 +146,7 @@ public class GuiWirelessFluidPatternTerminal extends GuiPatternTerm {
 
     @Override
     public List<IGhostIngredientHandler.Target<?>> getPhantomTargets(final Object ingredient) {
-        final List<IGhostIngredientHandler.Target<?>> targets = new ArrayList<>();
+        final List<IGhostIngredientHandler.Target<?>> targets = new ObjectArrayList<>();
         for (final Slot slot : this.inventorySlots.inventorySlots) {
             if (slot instanceof SlotFake) {
                 final IGhostIngredientHandler.Target<?> target = new FluidPacketTarget(getGuiLeft(), getGuiTop(), slot);
@@ -163,8 +163,8 @@ public class GuiWirelessFluidPatternTerminal extends GuiPatternTerm {
         if (!this.container.isCraftingMode() && slot instanceof final SlotFake s) {
             if (UtilClient.renderPatternSlotTip(this, mouseX, mouseY)) return;
             final var i = AEItemStack.fromItemStack(s.getStack());
-            if (UtilClient.rendererFluid(this, i, mouseX, mouseY, true)) return;
-            if (ModAndClassUtil.GAS && UtilClient.rendererGas(this, i, mouseX, mouseY, true)) return;
+            if (UtilClient.rendererFluid(this, i, mouseX, mouseY)) return;
+            if (ModAndClassUtil.GAS && UtilClient.rendererGas(this, i, mouseX, mouseY)) return;
         }
         super.renderHoveredToolTip(mouseX, mouseY);
     }

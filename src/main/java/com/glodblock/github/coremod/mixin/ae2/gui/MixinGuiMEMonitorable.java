@@ -40,10 +40,10 @@ public abstract class MixinGuiMEMonitorable extends AEBaseMEGui {
                 final var item = s.getAEStack();
                 if (item != null) {
                     if (item.getItem() == FCItems.FLUID_DROP) {
-                        if (UtilClient.rendererFluid(this, item, mouseX, mouseY, true)) return;
+                        if (UtilClient.rendererFluid(this, item, mouseX, mouseY)) return;
                     }
                     if (ModAndClassUtil.GAS && item.getItem() == FCGasItems.GAS_DROP) {
-                        if (UtilClient.rendererGas(this, item, mouseX, mouseY, true)) return;
+                        if (UtilClient.rendererGas(this, item, mouseX, mouseY)) return;
                     }
                 }
             } else if (UtilClient.renderContainerToolTip(this, mouseX, mouseY)) return;

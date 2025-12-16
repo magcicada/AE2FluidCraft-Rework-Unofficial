@@ -3,6 +3,7 @@ package com.glodblock.github.util;
 import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IAEStack;
+import appeng.client.gui.implementations.GuiMEMonitorable;
 import appeng.client.me.SlotME;
 import appeng.helpers.InventoryAction;
 import appeng.util.Platform;
@@ -151,8 +152,9 @@ public final class UtilClient {
     private static final MutablePair<IAEStack<?>, List<String>> cacheTooltip = new MutablePair<>();
     private static boolean cacheIsStorage = false;
 
-    public static boolean rendererFluid(final GuiContainer gui, final IAEItemStack item, final int mouseX, final int mouseY, final boolean isStorage) {
+    public static boolean rendererFluid(final GuiContainer gui, final IAEItemStack item, final int mouseX, final int mouseY) {
         if (item == null) return false;
+        final boolean isStorage = gui instanceof GuiMEMonitorable;
         if (item.getItem() == FCItems.FLUID_DROP) {
             if (cacheTooltip.left == null || !cacheTooltip.left.equals(item) || cacheTooltip.left.getStackSize() != item.getStackSize() || cacheIsStorage != isStorage) {
                 final IAEFluidStack fluidStack = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
@@ -182,8 +184,9 @@ public final class UtilClient {
     }
 
     @Optional.Method(modid = "mekeng")
-    public static boolean rendererGas(final GuiContainer gui, final IAEItemStack item, final int mouseX, final int mouseY, final boolean isStorage) {
+    public static boolean rendererGas(final GuiContainer gui, final IAEItemStack item, final int mouseX, final int mouseY) {
         if (item == null) return false;
+        final boolean isStorage = gui instanceof GuiMEMonitorable;
         if (item.getItem() == FCGasItems.GAS_DROP) {
             if (cacheTooltip.left == null || !cacheTooltip.left.equals(item) || cacheTooltip.left.getStackSize() != item.getStackSize() || cacheIsStorage != isStorage) {
                 final IAEGasStack gs = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
