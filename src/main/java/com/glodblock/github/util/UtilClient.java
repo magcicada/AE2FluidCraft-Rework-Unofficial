@@ -6,7 +6,6 @@ import appeng.api.storage.data.IAEStack;
 import appeng.client.gui.implementations.GuiMEMonitorable;
 import appeng.client.me.SlotME;
 import appeng.helpers.InventoryAction;
-import appeng.util.Platform;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.coremod.mixin.jei.AccessorGhostIngredientDragManager;
 import com.glodblock.github.coremod.mixin.jei.AccessorIngredientListOverlay;
@@ -15,6 +14,8 @@ import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.loader.FCItems;
 import com.mekeng.github.common.me.data.IAEGasStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -25,21 +26,25 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.tuple.MutablePair;
 
+import javax.annotation.Nonnull;
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import static com.glodblock.github.util.Util.mekModName;
-
 @SideOnly(Side.CLIENT)
 public final class UtilClient {
+
+    public static final String mekModName;
+    private static final Reference2ObjectMap<Fluid, String> fluidModNameMap = new Reference2ObjectOpenHashMap<>();
 
     public static boolean shouldAutoCraft(final Slot slot, final int mouseButton, final ClickType clickType) {
         if (slot instanceof SlotME) {
@@ -158,6 +163,17 @@ public final class UtilClient {
         return rendererFluid(gui, item, mouseX, mouseY, gui instanceof GuiMEMonitorable);
     }
 
+    static {
+        if (ModAndClassUtil.GAS) {
+            mekModName = UtilClient.getDisplayModName("mekanism");
+        } else mekModName = "";
+    }
+
+    @Optional.Method(modid = "mekeng")
+    public static boolean rendererGas(final GuiContainer gui, final IAEItemStack item, final int mouseX, final int mouseY) {
+        return rendererGas(gui, item, mouseX, mouseY, gui instanceof GuiMEMonitorable);
+    }
+
     public static boolean rendererFluid(final GuiContainer gui, final IAEItemStack item, final int mouseX, final int mouseY, final boolean isStorage) {
         if (item == null) return false;
         if (item.getItem() == FCItems.FLUID_DROP) {
@@ -165,13 +181,14 @@ public final class UtilClient {
                 final IAEFluidStack fluidStack = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
                 if (fluidStack != null) {
                     fluidStack.setStackSize(item.getStackSize());
-                    final String formattedAmount = GuiScreen.isShiftKeyDown() ? NumberFormat.getNumberInstance(Locale.US).format(fluidStack.getStackSize()) + " mB" : NumberFormat.getNumberInstance(Locale.US).format((double) fluidStack.getStackSize() / (double) 1000.0F) + " B";
-                    final String modName = TextFormatting.BLUE.toString() + TextFormatting.ITALIC + Loader.instance().getIndexedModList().get(Platform.getModId(fluidStack)).getName();
+                    final String modName = getFluidDisplayModName(fluidStack.getFluid());
                     final List<String> list = new ObjectArrayList<>();
                     list.add(fluidStack.getFluidStack().getLocalizedName());
                     list.add(modName);
-                    if (isStorage)
+                    if (isStorage) {
+                        final String formattedAmount = GuiScreen.isShiftKeyDown() ? NumberFormat.getNumberInstance(Locale.US).format(fluidStack.getStackSize()) + " mB" : NumberFormat.getNumberInstance(Locale.US).format((double) fluidStack.getStackSize() / (double) 1000.0F) + " B";
                         list.add(TextFormatting.DARK_GRAY + I18n.format("gui.appliedenergistics2.StoredFluids") + " ： " + formattedAmount);
+                    }
                     if (item.isCraftable())
                         list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
                     gui.drawHoveringText(list, mouseX, mouseY);
@@ -186,11 +203,6 @@ public final class UtilClient {
             }
         }
         return false;
-    }
-
-    @Optional.Method(modid = "mekeng")
-    public static boolean rendererGas(final GuiContainer gui, final IAEItemStack item, final int mouseX, final int mouseY) {
-        return rendererGas(gui, item, mouseX, mouseY, gui instanceof GuiMEMonitorable);
     }
 
     @Optional.Method(modid = "mekeng")
@@ -201,12 +213,13 @@ public final class UtilClient {
                 final IAEGasStack gs = FakeItemRegister.getAEStack(item.copy().setStackSize(1));
                 if (gs != null) {
                     gs.setStackSize(item.getStackSize());
-                    final String formattedAmount = GuiScreen.isShiftKeyDown() ? NumberFormat.getNumberInstance(Locale.US).format(gs.getStackSize()) + " mB" : NumberFormat.getNumberInstance(Locale.US).format((double) gs.getStackSize() / (double) 1000.0F) + " B";
                     final List<String> list = new ObjectArrayList<>();
                     list.add(gs.getGas().getLocalizedName());
                     list.add(mekModName);
-                    if (isStorage)
+                    if (isStorage) {
+                        final String formattedAmount = GuiScreen.isShiftKeyDown() ? NumberFormat.getNumberInstance(Locale.US).format(gs.getStackSize()) + " mB" : NumberFormat.getNumberInstance(Locale.US).format((double) gs.getStackSize() / (double) 1000.0F) + " B";
                         list.add(TextFormatting.DARK_GRAY + I18n.format("tooltip.stored") + " ： " + formattedAmount);
+                    }
                     if (item.isCraftable())
                         list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
                     gui.drawHoveringText(list, mouseX, mouseY);
@@ -221,6 +234,20 @@ public final class UtilClient {
             }
         }
         return false;
+    }
+
+    public static String getFluidDisplayModName(FluidStack fluidStack) {
+        if (fluidStack == null) return "";
+        return getFluidDisplayModName(fluidStack.getFluid());
+    }
+
+    public static String getFluidDisplayModName(Fluid fluid) {
+        if (fluid == null) return "";
+        return fluidModNameMap.computeIfAbsent(fluid, f -> getDisplayModName(Util.getFluidModID(f)));
+    }
+
+    public static String getDisplayModName(@Nonnull String modid) {
+        return TextFormatting.BLUE.toString() + TextFormatting.ITALIC + Loader.instance().getIndexedModList().get(modid).getName();
     }
 
 }

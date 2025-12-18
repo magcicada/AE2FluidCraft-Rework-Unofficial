@@ -26,6 +26,8 @@ import com.mekeng.github.common.me.storage.IGasStorageChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.EncoderException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import mekanism.api.gas.GasStack;
 import mekanism.api.gas.IGasItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,14 +36,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -55,12 +58,16 @@ import java.util.Objects;
 
 public final class Util {
 
-    public static final String mekModName;
+    private static final Reference2ObjectMap<Fluid, String> fluidModIDMap = new Reference2ObjectOpenHashMap<>();
 
-    static {
-        if (ModAndClassUtil.GAS) {
-            mekModName = "" + TextFormatting.BLUE + TextFormatting.ITALIC + Loader.instance().getIndexedModList().get("mekanism").getName();
-        } else mekModName = "";
+    public static String getFluidModID(FluidStack fluidStack) {
+        if (fluidStack == null) return "";
+        return getFluidModID(fluidStack.getFluid());
+    }
+
+    public static String getFluidModID(Fluid fluid) {
+        if (fluid == null) return "";
+        return fluidModIDMap.computeIfAbsent(fluid, f -> new ResourceLocation(FluidRegistry.getDefaultFluidName(f)).getNamespace());
     }
 
     public static IStorageChannel<IAEFluidStack> getFluidChannel() {
