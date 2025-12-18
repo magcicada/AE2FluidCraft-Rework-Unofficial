@@ -13,7 +13,7 @@ public final class NameConst {
     public static final String BLOCK_LARGE_INGREDIENT_BUFFER = "large_ingredient_buffer";
     public static final String BLOCK_BURETTE = "burette";
     public static final String BLOCK_DUAL_INTERFACE = "dual_interface";
-    public static final String BLOCK_GENERAL_LEVEL_MAINTAINER = "general_level_maintainer";
+    public static final String BLOCK_GENERAL_LEVEL_MAINTAINER = "fluid_level_maintainer";
     public static final String BLOCK_FLUID_ASSEMBLER = "fluid_assembler";
     public static final String BLOCK_ULTIMATE_ENCODER = "ultimate_encoder";
     public static final String BLOCK_TRIO_INTERFACE = "trio_interface";

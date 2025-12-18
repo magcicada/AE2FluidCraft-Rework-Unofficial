@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class GuiGeneralLevelMaintainer extends AEBaseGui implements IJEIGhostIngredients {
 
-    private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/general_level_maintainer.png");
+    private static final ResourceLocation TEX_BG = FluidCraft.resource("textures/gui/fluid_level_maintainer.png");
 
     private final ContainerGeneralLevelMaintainer cont;
     private final GuiNumberBox[] maintain = new GuiNumberBox[TileGeneralLevelMaintainer.MAX_FLUID];

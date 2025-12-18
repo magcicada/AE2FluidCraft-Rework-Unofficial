@@ -58,10 +58,10 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
         final DualityInterface dualInterface = getInterfaceTE(inter, face) == null ?
                 null : Objects.requireNonNull(getInterfaceTE(inter, face)).getInterfaceDuality();
         boolean onmi = false;
-        if (inter instanceof TileInterface) {
-            onmi = ((TileInterface) inter).getTargets().size() > 1;
-        } else if (inter instanceof TileDualInterface) {
-            onmi = ((TileDualInterface) inter).getTargets().size() > 1;
+        if (inter instanceof TileInterface i) {
+            onmi = i.getTargets().size() > 1;
+        } else if (inter instanceof TileDualInterface i) {
+            onmi = i.getTargets().size() > 1;
         }
 
         if (dualInterface == null || !((FCDualityInterface) dualInterface).isFluidPacket()) {
@@ -431,8 +431,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     protected static IInterfaceHost getInterfaceTE(final TileEntity te, final EnumFacing face) {
         if (te instanceof IInterfaceHost) {
             return (IInterfaceHost) te;
-        } else if (te instanceof TileCableBus) {
-            final IPart part = ((TileCableBus) te).getPart(face.getOpposite());
+        } else if (te instanceof TileCableBus p) {
+            final IPart part = p.getPart(face.getOpposite());
             if (part instanceof IInterfaceHost) {
                 return (IInterfaceHost) part;
             }
@@ -444,8 +444,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     protected static IFluidInterfaceHost getFluidInterfaceTE(final TileEntity te, final EnumFacing face) {
         if (te instanceof IFluidInterfaceHost) {
             return (IFluidInterfaceHost) te;
-        } else if (te instanceof TileCableBus) {
-            final IPart part = ((TileCableBus) te).getPart(face.getOpposite());
+        } else if (te instanceof TileCableBus p) {
+            final IPart part = p.getPart(face.getOpposite());
             if (part instanceof IFluidInterfaceHost) {
                 return (IFluidInterfaceHost) part;
             }
@@ -457,8 +457,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     protected static Object getGasInterfaceTE(final TileEntity te, final EnumFacing face) {
         if (te instanceof IGasInterfaceHost) {
             return te;
-        } else if (te instanceof TileCableBus) {
-            final IPart part = ((TileCableBus) te).getPart(face.getOpposite());
+        } else if (te instanceof TileCableBus p) {
+            final IPart part = p.getPart(face.getOpposite());
             if (part instanceof IGasInterfaceHost) {
                 return part;
             }
@@ -469,8 +469,8 @@ public class FluidConvertingInventoryAdaptor extends InventoryAdaptor {
     protected static AENetworkProxy getGasInterfaceGrid(@Nullable final TileEntity te, final EnumFacing face) {
         if (te instanceof IGasInterfaceHost) {
             return Ae2Reflect.getGasInterfaceGrid(((IGasInterfaceHost) te).getDualityGasInterface());
-        } else if (te instanceof TileCableBus) {
-            final IPart part = ((TileCableBus) te).getPart(face.getOpposite());
+        } else if (te instanceof TileCableBus p) {
+            final IPart part = p.getPart(face.getOpposite());
             if (part instanceof IGasInterfaceHost) {
                 return Ae2Reflect.getGasInterfaceGrid(((IGasInterfaceHost) part).getDualityGasInterface());
             }
