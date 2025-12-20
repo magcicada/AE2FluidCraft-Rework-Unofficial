@@ -9,10 +9,8 @@ import appeng.items.storage.ItemViewCell;
 import appeng.tile.misc.TileCellWorkbench;
 import com.glodblock.github.common.item.fake.FakeFluids;
 import com.glodblock.github.common.item.fake.FakeItemRegister;
-import com.glodblock.github.integration.mek.FakeGases;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.Util;
-import mekanism.api.gas.GasStack;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
@@ -81,24 +79,10 @@ public abstract class MixinContainerCellWorkbench extends ContainerUpgradeable {
     @Unique
     @Optional.Method(modid = "mekeng")
     private void mek$doAction(EntityPlayerMP player, InventoryAction action, int slotId, long id, Slot slot, ItemStack stack) {
-        GasStack gas = null;
-        switch (action) {
-            case PICKUP_OR_SET_DOWN -> {
-                gas = Util.getGasFromItem(stack);
-                slot.putStack(FakeGases.packGas2Drops(gas));
-            }
-            case SPLIT_OR_PLACE_SINGLE -> {
-                gas = Util.getGasFromItem(ItemHandlerHelper.copyStackWithSize(stack, 1));
-                final GasStack origin = FakeItemRegister.getStack(slot.getStack());
-                if (gas != null && gas.equals(origin)) {
-                    gas.amount += origin.amount;
-                    if (gas.amount <= 0) gas = null;
-                }
-                slot.putStack(FakeGases.packGas2Drops(gas));
-            }
-        }
+        Object gas = Util.gasAction(action, slot, stack);
         if (gas == null) {
             super.doAction(player, action, slotId, id);
         }
     }
+
 }

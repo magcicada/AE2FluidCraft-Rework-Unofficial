@@ -13,11 +13,13 @@ import appeng.api.storage.data.IItemList;
 import appeng.core.localization.PlayerMessages;
 import appeng.fluids.util.AEFluidInventory;
 import appeng.fluids.util.AEFluidStack;
+import appeng.helpers.InventoryAction;
 import appeng.parts.reporting.AbstractPartEncoder;
 import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.Platform;
 import appeng.util.item.AEItemStack;
 import com.glodblock.github.common.item.fake.FakeFluids;
+import com.glodblock.github.common.item.fake.FakeItemRegister;
 import com.glodblock.github.integration.mek.FakeGases;
 import com.glodblock.github.inventory.GuiType;
 import com.glodblock.github.inventory.InventoryHandler;
@@ -48,6 +50,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -400,6 +403,27 @@ public final class Util {
                 ((AppEngInternalInventory) output).setStackInSlot(x, item == null ? ItemStack.EMPTY : item);
             }
         }
+    }
+
+    @Optional.Method(modid = "mekeng")
+    public static GasStack gasAction(InventoryAction action, Slot slot, ItemStack stack) {
+        GasStack gas = null;
+        switch (action) {
+            case PICKUP_OR_SET_DOWN -> {
+                gas = Util.getGasFromItem(stack);
+                slot.putStack(FakeGases.packGas2Drops(gas));
+            }
+            case SPLIT_OR_PLACE_SINGLE -> {
+                gas = Util.getGasFromItem(ItemHandlerHelper.copyStackWithSize(stack, 1));
+                final GasStack origin = FakeItemRegister.getStack(slot.getStack());
+                if (gas != null && gas.equals(origin)) {
+                    gas.amount += origin.amount;
+                    if (gas.amount <= 0) gas = null;
+                }
+                slot.putStack(FakeGases.packGas2Drops(gas));
+            }
+        }
+        return gas;
     }
 
 }
