@@ -17,13 +17,11 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(value = ContainerCellWorkbench.class, remap = false)
 public abstract class MixinContainerCellWorkbench extends ContainerUpgradeable {
@@ -69,20 +67,13 @@ public abstract class MixinContainerCellWorkbench extends ContainerUpgradeable {
             }
             return;
         }
-        if (ModAndClassUtil.GAS && slot instanceof SlotFake && !stack.isEmpty() && Util.getGasFromItem(stack) != null) {
-            mek$doAction(player, action, slotId, id, slot, stack);
+        if (ModAndClassUtil.GAS && slot instanceof SlotFake && !stack.isEmpty()) {
+            if (Util.gasAction(action, slot, stack)) {
+                super.doAction(player, action, slotId, id);
+            }
             return;
         }
         super.doAction(player, action, slotId, id);
-    }
-
-    @Unique
-    @Optional.Method(modid = "mekeng")
-    private void mek$doAction(EntityPlayerMP player, InventoryAction action, int slotId, long id, Slot slot, ItemStack stack) {
-        Object gas = Util.gasAction(action, slot, stack);
-        if (gas == null) {
-            super.doAction(player, action, slotId, id);
-        }
     }
 
 }

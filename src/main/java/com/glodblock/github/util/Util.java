@@ -406,7 +406,8 @@ public final class Util {
     }
 
     @Optional.Method(modid = "mekeng")
-    public static GasStack gasAction(InventoryAction action, Slot slot, ItemStack stack) {
+    public static boolean gasAction(InventoryAction action, Slot slot, ItemStack stack) {
+        if (getGasFromItem(stack) == null) return true;
         GasStack gas = null;
         switch (action) {
             case PICKUP_OR_SET_DOWN -> {
@@ -423,7 +424,7 @@ public final class Util {
                 slot.putStack(FakeGases.packGas2Drops(gas));
             }
         }
-        return gas;
+        return gas == null;
     }
 
 }
