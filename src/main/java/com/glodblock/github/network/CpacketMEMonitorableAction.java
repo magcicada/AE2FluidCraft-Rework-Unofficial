@@ -89,9 +89,9 @@ public class CpacketMEMonitorableAction implements IMessage {
                 final ItemStack ch = h.copy();
                 ch.setCount(1);
                 if (message.type == FLUID) {
-                    player.server.addScheduledTask(() -> fluidWork(message, ch, grid, source, h, player));
+                    player.server.addScheduledTask(() -> fluidWork(message, ch, grid, source, player));
                 } else if (ModAndClassUtil.GAS && message.type == GAS && h.getItem() instanceof final IGasItem ig) {
-                    player.server.addScheduledTask(() -> gasWork(message, ig, ch, grid, source, h, player));
+                    player.server.addScheduledTask(() -> gasWork(message, ig, ch, grid, source, player));
                 }
             } else {
                 if (message.type == FLUID_OPERATE) {
@@ -105,6 +105,7 @@ public class CpacketMEMonitorableAction implements IMessage {
             if (bucket == null) {
                 bucket = AEItemStack.fromItemStack(new ItemStack(Items.BUCKET));
             }
+            if (!player.inventory.getItemStack().isEmpty()) return;
             final FluidStack fluid;
             if (!message.obj.isEmpty()) {
                 final var i = new ItemStack(message.obj);
@@ -136,7 +137,9 @@ public class CpacketMEMonitorableAction implements IMessage {
             fluidStorage.extractItems(aeFluid, Actionable.MODULATE, source);
         }
 
-        private static void fluidWork(final CpacketMEMonitorableAction message, final ItemStack ch, final IStorageGrid grid, final IActionSource source, final ItemStack h, final EntityPlayerMP player) {
+        private static void fluidWork(final CpacketMEMonitorableAction message, final ItemStack ch, final IStorageGrid grid, final IActionSource source, final EntityPlayerMP player) {
+            final var h = player.inventory.getItemStack();
+            if (!ItemStack.areItemsEqual(ch, h) || !ItemStack.areItemStackTagsEqual(ch, h) || h.isEmpty()) return;
             boolean drain = false;
             final IFluidHandlerItem fh = FluidUtil.getFluidHandler(ch);
             if (fh == null) return;
@@ -178,7 +181,9 @@ public class CpacketMEMonitorableAction implements IMessage {
 
         @Unique
         @Optional.Method(modid = "mekeng")
-        private static void gasWork(final CpacketMEMonitorableAction message, final IGasItem ig, final ItemStack ch, final IStorageGrid grid, final IActionSource source, final ItemStack h, final EntityPlayerMP player) {
+        private static void gasWork(final CpacketMEMonitorableAction message, final IGasItem ig, final ItemStack ch, final IStorageGrid grid, final IActionSource source, final EntityPlayerMP player) {
+            final var h = player.inventory.getItemStack();
+            if (!ItemStack.areItemsEqual(ch, h) || !ItemStack.areItemStackTagsEqual(ch, h) || h.isEmpty()) return;
             boolean drain = false;
             final var allGas = ig.getGas(ch);
             final var allAmount = allGas == null ? 0 : allGas.amount;
