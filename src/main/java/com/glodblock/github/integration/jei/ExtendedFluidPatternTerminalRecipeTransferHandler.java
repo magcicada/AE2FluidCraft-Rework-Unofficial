@@ -2,7 +2,7 @@ package com.glodblock.github.integration.jei;
 
 import com.glodblock.github.FluidCraft;
 import com.glodblock.github.client.container.ContainerExtendedFluidPatternTerminal;
-import com.glodblock.github.common.part.PartExtendedFluidPatternTerminal;
+import com.glodblock.github.interfaces.FCFluidPatternPart;
 import com.glodblock.github.network.CPacketLoadPattern;
 import com.glodblock.github.util.NameConst;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -32,7 +32,7 @@ public class ExtendedFluidPatternTerminalRecipeTransferHandler implements IRecip
            return new RecipeTransferErrorTooltip(I18n.format(NameConst.TT_CRAFTING_RECIPE_ONLY));
        }
 
-       if (doTransfer && container.part instanceof PartExtendedFluidPatternTerminal) {
+        if (doTransfer && container.part instanceof FCFluidPatternPart) {
            final RecipeTransferBuilder transfer = new RecipeTransferBuilder(
                    recipeLayout)
                    .clearEmptySlot(true)
