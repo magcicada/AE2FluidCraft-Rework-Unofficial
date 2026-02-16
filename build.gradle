@@ -426,6 +426,10 @@ publishing {
                 classifier = null 
             }
             
+            artifact(jar) {
+                classifier = 'dev'
+            }
+            
             artifact(sourcesJar) {
                 classifier = 'sources'
             }
