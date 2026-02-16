@@ -41,7 +41,8 @@ setDefaultProperty 'extra_tweak_classes', false, ''
 setDefaultProperty 'change_minecraft_sources', false, false
 
 version = propertyString('mod_version')
-group = propertyString('root_package')
+group = project.hasProperty('group') ? project.getProperties().get('group') : propertyString('root_package')
+version = propertyString('mod_version')
 
 base {
     archivesName.set(propertyString('mod_id'))
@@ -421,14 +422,15 @@ apply from: 'gradle/scripts/extra.gradle'
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            from components.java
+            artifact(reobfJar) {
+                classifier null
+            }
+            artifact sourcesJar {
+                classifier 'sources'
+            }
             
-            artifact jar
-            artifact sourcesJar
-            
-
             groupId = project.group
-            artifactId = "ae2fc" 
+            artifactId = project.mod_id
             version = project.version
         }
     }
