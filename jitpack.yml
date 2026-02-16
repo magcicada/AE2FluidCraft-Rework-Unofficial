@@ -1,4 +1,4 @@
 jdk:
   - openjdk17
 install:
-  - ./gradlew clean assemble publishToMavenLocal -Pgroup=com.github.magcicada
+  - ./gradlew publishToMavenLocal -Pgroup=com.github.magcicada -x test
