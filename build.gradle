@@ -423,14 +423,15 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             artifact(reobfJar) {
-                classifier null
+                classifier = null 
             }
-            artifact sourcesJar {
-                classifier 'sources'
+            
+            artifact(sourcesJar) {
+                classifier = 'sources'
             }
             
             groupId = project.group
-            artifactId = project.mod_id
+            artifactId = propertyString('mod_id')
             version = project.version
         }
     }
