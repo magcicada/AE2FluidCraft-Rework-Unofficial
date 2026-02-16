@@ -417,3 +417,19 @@ idea.project.settings {
 
 apply from: 'gradle/scripts/publishing.gradle'
 apply from: 'gradle/scripts/extra.gradle'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            
+            artifact jar
+            artifact sourcesJar
+            
+
+            groupId = project.group
+            artifactId = "ae2fc" 
+            version = project.version
+        }
+    }
+}
