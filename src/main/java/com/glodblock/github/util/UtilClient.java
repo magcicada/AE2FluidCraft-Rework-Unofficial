@@ -16,6 +16,7 @@ import com.mekeng.github.common.me.data.IAEGasStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
+import mekanism.api.gas.GasStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -192,7 +193,7 @@ public final class UtilClient {
                     if (item.isCraftable())
                         list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
                     gui.drawHoveringText(list, mouseX, mouseY);
-                    cacheTooltip.setLeft(item);
+                    cacheTooltip.setLeft(item.copy());
                     cacheTooltip.setRight(list);
                     cacheIsStorage = isStorage;
                     return true;
@@ -223,7 +224,7 @@ public final class UtilClient {
                     if (item.isCraftable())
                         list.add(TextFormatting.GRAY + I18n.format("gui.tooltips.appliedenergistics2.ItemsCraftable"));
                     gui.drawHoveringText(list, mouseX, mouseY);
-                    cacheTooltip.setLeft(item);
+                    cacheTooltip.setLeft(item.copy());
                     cacheTooltip.setRight(list);
                     cacheIsStorage = isStorage;
                     return true;
@@ -244,6 +245,14 @@ public final class UtilClient {
     public static String getFluidDisplayModName(Fluid fluid) {
         if (fluid == null) return "";
         return fluidModNameMap.computeIfAbsent(fluid, f -> getDisplayModName(Util.getFluidModID(f)));
+    }
+
+    @Optional.Method(modid = "mekeng")
+    public static String getGasDisplayName(Object gas) {
+        if (gas instanceof GasStack gs) {
+            return gs.getGas().getLocalizedName();
+        }
+        return "";
     }
 
     public static String getDisplayModName(@Nonnull String modid) {

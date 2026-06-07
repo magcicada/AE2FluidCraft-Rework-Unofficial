@@ -12,8 +12,6 @@ import appeng.tile.inventory.AppEngInternalInventory;
 import appeng.util.inv.ItemSlot;
 import appeng.util.inv.filter.IAEItemFilter;
 import com.mekeng.github.common.me.duality.impl.DualityGasInterface;
-import net.minecraft.inventory.Container;
-import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.world.World;
 
 import java.lang.invoke.MethodHandle;
@@ -24,11 +22,11 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 
+@SuppressWarnings("unchecked")
 public class Ae2Reflect {
 
     private static final MethodHandle mItemSlot_setExtractable;
     private static final MethodHandle fGetDisassembleRecipe_nonCellMappings;
-    private static final MethodHandle fGetInventory_container;
     private static final MethodHandle fGetDualInterface_gridProxy;
     private static final MethodHandle fGetDualityFluidInterface_gridProxy;
     private static final MethodHandle fGetAppEngInternalInventory_filter;
@@ -42,7 +40,6 @@ public class Ae2Reflect {
     static {
         try {
             mItemSlot_setExtractable = reflectMethodHandle(ItemSlot.class, "setExtractable", boolean.class);
-            fGetInventory_container = reflectFieldGetter(InventoryCrafting.class, "eventHandler", "field_70465_c", "c");
             fGetDisassembleRecipe_nonCellMappings = reflectFieldGetter(DisassembleRecipe.class, "nonCellMappings");
             fGetDualInterface_gridProxy = reflectFieldGetter(DualityInterface.class, "gridProxy");
             fGetDualityFluidInterface_gridProxy = reflectFieldGetter(DualityFluidInterface.class, "gridProxy");
@@ -158,10 +155,6 @@ public class Ae2Reflect {
         } catch (final Throwable e) {
             throw new IllegalStateException("Failed to write field: " + field);
         }
-    }
-
-    public static Container getCraftContainer(final InventoryCrafting inv) {
-        return Ae2Reflect.readField(inv, fGetInventory_container);
     }
 
     public static void setItemSlotExtractable(final ItemSlot slot, final boolean extractable) {

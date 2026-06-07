@@ -8,7 +8,6 @@ import com.glodblock.github.integration.mek.FCGasItems;
 import com.glodblock.github.loader.FCItems;
 import com.glodblock.github.util.ModAndClassUtil;
 import com.glodblock.github.util.UtilClient;
-import mekanism.api.gas.GasStack;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -50,9 +49,9 @@ public abstract class MixinGuiCraftAmount extends AEBaseGui {
     @Unique
     @Optional.Method(modid = "mekeng")
     private boolean rendererGas(final ItemStack item, final int mouseX, final int mouseY) {
-        final GasStack gs = FakeItemRegister.getStack(item);
+        final Object gs = FakeItemRegister.getStack(item);
         if (gs != null) {
-            this.drawHoveringText(Collections.singletonList(gs.getGas().getLocalizedName()), mouseX, mouseY);
+            this.drawHoveringText(Collections.singletonList(UtilClient.getGasDisplayName(gs)), mouseX, mouseY);
             return true;
         }
         return false;

@@ -70,11 +70,6 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 public class CoreModHooks {
 
-    public static InventoryCrafting wrapCraftingBuffer(final InventoryCrafting inv) {
-        final int s = inv.getWidth() > 3 ? 10 : 3;
-        return new FluidConvertingInventoryCrafting(Ae2Reflect.getCraftContainer(inv), s, s);
-    }
-
     public static InventoryCrafting wrapCraftingBuffer(final Container container, final int width, final int height) {
         final int s = width > 3 ? 10 : 3;
         return new FluidConvertingInventoryCrafting(container, width, height);

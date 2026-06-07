@@ -229,7 +229,6 @@ public class TileGeneralLevelMaintainer extends AENetworkTile implements ICrafti
                     return items;
                 }
             }
-
         } catch (final GridAccessException e) {
             AELog.debug(e);
         }

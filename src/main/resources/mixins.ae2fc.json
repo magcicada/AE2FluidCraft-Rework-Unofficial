@@ -11,6 +11,7 @@
     "ae2.MixinDualityInterface",
     "ae2.MixinGridStorageCache",
     "ae2.MixinGuiBridge",
+    "ae2.MixinMEPassThrough",
     "ae2.MixinNetworkInventoryHandler",
     "ae2.MixinNetworkMonitor",
     "ae2.container.MixinContainerCellWorkbench",

@@ -54,8 +54,9 @@ public abstract class FakeMonitor<T extends IAEStack<T>> implements IMEMonitor<I
     public IAEItemStack extractItems(final IAEItemStack stack, final Actionable actionable, final IActionSource source) {
         final T i = FakeItemRegister.getAEStack(stack);
         if (i == null) return null;
+        final T s;
         final FakeMonitorSource fakeSource = FakeMonitorSource.release(source);
-        final T s = monitor.extractItems(i, actionable, fakeSource);
+        s = monitor.extractItems(i, actionable, fakeSource);
         fakeSource.recycle();
         if (s == null) {
             return null;
@@ -117,51 +118,55 @@ public abstract class FakeMonitor<T extends IAEStack<T>> implements IMEMonitor<I
         return i == 2;
     }
 
-    public static final class FakeMonitorSource implements IActionSource {
+    public GridStorageCache getStorage() {
+        return storage;
+    }
+
+    public static class FakeMonitorSource implements IActionSource {
 
         private static final Deque<FakeMonitorSource> POOL = new ArrayDeque<>(100);
         private IActionSource source;
 
-        private FakeMonitorSource(final IActionSource source) {
-            this.source = source;
-        }
-
         public static FakeMonitorSource release(final IActionSource source) {
             synchronized (POOL) {
                 if (!POOL.isEmpty()) {
-                    return POOL.peek().setSource(source);
+                    var s = POOL.peek();
+                    s.source = source;
+                    return s;
                 }
             }
             return new FakeMonitorSource(source);
         }
 
-        public FakeMonitorSource setSource(final IActionSource source) {
+        private FakeMonitorSource(final IActionSource source) {
             this.source = source;
-            return this;
+        }
+
+        public IActionSource getSource() {
+            return source;
         }
 
         public void recycle() {
             synchronized (POOL) {
                 if (POOL.size() < 100) POOL.add(this);
             }
-            this.setSource(null);
         }
 
         @Nonnull
         @Override
-        public Optional<EntityPlayer> player() {
+        public final Optional<EntityPlayer> player() {
             return source.player();
         }
 
         @Nonnull
         @Override
-        public Optional<IActionHost> machine() {
+        public final Optional<IActionHost> machine() {
             return source.machine();
         }
 
         @Nonnull
         @Override
-        public <T> Optional<T> context(@Nonnull final Class<T> aClass) {
+        public final <T> Optional<T> context(@Nonnull final Class<T> aClass) {
             return source.context(aClass);
         }
     }
