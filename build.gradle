@@ -41,7 +41,8 @@ setDefaultProperty 'extra_tweak_classes', false, ''
 setDefaultProperty 'change_minecraft_sources', false, false
 
 version = propertyString('mod_version')
-group = propertyString('root_package')
+group = project.hasProperty('group') ? project.getProperties().get('group') : propertyString('root_package')
+version = propertyString('mod_version')
 
 base {
     archivesName.set(propertyString('mod_id'))
@@ -148,6 +149,10 @@ repositories {
     }
     maven {
         url = uri("https://repo.spongepowered.org/maven")
+    }
+    maven {
+        name = "jitpack.io"
+        url = uri("https://jitpack.io")
     }
     maven {
         name = "GeckoLib"
@@ -378,3 +383,25 @@ idea.project.settings {
 
 apply from: 'gradle/scripts/publishing.gradle'
 apply from: 'gradle/scripts/extra.gradle'
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact(reobfJar) {
+                classifier = null 
+            }
+            
+            artifact(jar) {
+                classifier = 'dev'
+            }
+            
+            artifact(sourcesJar) {
+                classifier = 'sources'
+            }
+            
+            groupId = project.group
+            artifactId = propertyString('mod_id')
+            version = project.version
+        }
+    }
+}
